@@ -44,9 +44,10 @@ public class Learning2Rank {
  		
 		/* Step (1): construct your feature matrix here */
 		Instances data = learner.extract_train_features(train_data_file, train_rel_file, idfs);
-		
+		//System.out.println(data.get(0));
 		/* Step (2): implement your learning algorithm here */
 		model = learner.training(data);
+		//System.out.println(model);
 	 		
 	    return model;
 	  }
@@ -129,6 +130,7 @@ public class Learning2Rank {
 	    /* Train & test */
 	    System.err.println("### Running task" + task + "...");		
 	    Classifier model = train(train_data_file, train_rel_file, task, idfs);
+	    //System.out.println(model);
 
       /* performance on the training data */
       Map<String, List<String>> trained_ranked_queries = test(train_data_file, model, task, idfs);
