@@ -1,10 +1,14 @@
 package cs276.pa4;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.List;
 import java.util.Map;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.LibSVM;
+import weka.classifiers.functions.LinearRegression;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SelectedTag;
 
@@ -47,10 +51,20 @@ public class PairwiseLearner extends Learner {
 
 	@Override
 	public Classifier training(Instances dataset) {
-		/*
-		 * @TODO: Your code here
-		 */
-		return null;
+		try {
+			this.model.buildClassifier(dataset);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//System.out.println("Num of Param: " + this.model.numParameters());
+        //System.out.println("Weights:");
+        //for (double coefficient : this.model.coefficients()) {
+		//	System.out.println(coefficient);
+		//}
+		//System.out.println("Slope: " + this.model.getSlope());
+        //System.out.println("Intercept: " + this.model.getIntercept());
+       // System.out.println(this.model);
+		return this.model;
 	}
 
 	@Override
@@ -69,6 +83,37 @@ public class PairwiseLearner extends Learner {
 		 * @TODO: Your code here
 		 */
 		return null;
+	}
+	
+	//TODO: Remove. Only for test
+	public static void testRegressionModel() throws Exception{
+	
+		Instances data = new Instances(new BufferedReader(new FileReader("libsvm.arff")));
+		data.setClassIndex(data.numAttributes() - 1);
+		//build model
+		LibSVM model = new LibSVM();
+		//NaiveBayes model = new NaiveBayes();
+		model.buildClassifier(data); //the last instance with missing class is not used
+		System.out.println(model);
+		System.out.println("Num of Param: " + model);
+        System.out.println("Weights:");
+        for (double coefficient : model.coefficients()) {
+			System.out.println(coefficient);
+		}
+		//classify the last instance
+		Instance myHouse = data.lastInstance();
+		double price = model.classifyInstance(myHouse);
+		System.out.println("My house ("+myHouse+"): "+price);
+		
+	}
+	
+	//TODO: Remove. Only for test
+	public static void main(String[] args) throws Exception{
+//		for(int i=0; i<10; i++) {
+//			System.out.println((int)(Math.random()*100)+","+(int)(Math.random()*100)+","+(int)(Math.random()*100)+","+(int)(Math.random()*100)+","+(int)(Math.random()*100)+","+(int)(Math.random()*100000+1000000));
+//		}
+		//PointwiseLearner.testRegressionModel();
+		PairwiseLearner.testRegressionModel();
 	}
 
 }
