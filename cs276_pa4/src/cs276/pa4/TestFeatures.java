@@ -1,5 +1,6 @@
 package cs276.pa4;
 import weka.core.Attribute;
+import weka.core.Instance;
 import weka.core.Instances;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class TestFeatures {
 	 *   features.get(index_map.get(query).get(url));
 	 * */
 	Map<String, Map<String, Integer>> index_map;
+	private int index;
 	
 	public TestFeatures() {
 		/* Build attributes list */
@@ -31,7 +33,23 @@ public class TestFeatures {
 		attributes.add(new Attribute("anchor_w"));
 		attributes.add(new Attribute("relevance_score"));
 		this.features = new Instances("train_dataset", attributes, 0);
-		
+		features.setClassIndex(features.numAttributes() - 1);
 		this.index_map = new HashMap<String, Map<String, Integer>>();
+		this.index = 0;
+	}
+	
+	public void add(String query, String url, Instance inst) {
+		if(!index_map.containsKey(query)) {
+			index_map.put(query, new HashMap<String,Integer>());
+		}
+		index_map.get(query).put(url, this.index);
+		features.add(inst);
+	//	System.out.println("adding: "+query+"\n\t"+this.index+": "+url);
+		this.index++;
+	}
+	
+	public Instance getInstance(String query, String url) {
+		return features.get(index_map.get(query).get(url));
+//		return features.get(0);
 	}
 }

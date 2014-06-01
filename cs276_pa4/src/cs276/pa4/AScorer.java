@@ -14,7 +14,8 @@ import javax.print.DocFlavor.STRING;
 public class AScorer 
 {
 	double smoothingBodyLength = 1000;
-	int corpusCount = 98998;
+	//int corpusCount = 98998;
+	int corpusCount = 1;
 	Map<String,Double> idfs;
 	static String[] TFTYPES = {"url","title","body","header","anchor"};
 	

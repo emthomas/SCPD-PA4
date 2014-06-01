@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import weka.classifiers.Classifier;
+import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.functions.LibSVM;
 import weka.classifiers.functions.SimpleLinearRegression;
 import weka.core.Attribute;
@@ -18,10 +19,10 @@ import weka.core.Instances;
 import weka.classifiers.functions.LinearRegression;
 
 public class PointwiseLearner extends Learner {
-	private SimpleLinearRegression model;
+	private LinearRegression model;
 	
 	  public PointwiseLearner() {
-		  this.model = new SimpleLinearRegression();
+		  this.model = new LinearRegression();
 	  }
 	  
 	@Override
@@ -81,7 +82,8 @@ public class PointwiseLearner extends Learner {
 				double relevanceScore = 0.0;
 				
 				for(String term: q.words){
-					double qIDF = Util.IDF(term, idfs);					
+					double qIDF = Util.IDF(term, idfs);	
+					qIDF = 1;
 					double d_tf_url = getDocFieldTF(term, "url", tfDoc);
 					tfIdfUrl = tfIdfUrl + qIDF * d_tf_url;
 					
@@ -115,9 +117,11 @@ public class PointwiseLearner extends Learner {
 				instance[4] = tfIdfAnchor;
 				instance[5] = relevanceScore;
 				//System.out.println("[REMOVE] "+Arrays.toString(instance));
+				//double[] inst_test = {Math.random()*2, Math.random()*5, Math.random()*20, Math.random()*6, Math.random()*2, Math.random()*2};
 				
-				inst = new DenseInstance(1.0, instance); 
-				dataset.add(inst);
+				//inst = new DenseInstance(1.0, inst_test); 
+				//System.out.println("[REMOVE] "+inst);
+				dataset.add(new DenseInstance(1.0, instance));
 				
 			}
 		}
@@ -136,6 +140,8 @@ public class PointwiseLearner extends Learner {
 		
 		/* Set last attribute as target */
 		dataset.setClassIndex(dataset.numAttributes() - 1);
+		//model.buildClassifier(dataset);
+		//System.out.println(dataset.numInstances());
 		
 		return dataset;
 	}
@@ -154,16 +160,20 @@ public class PointwiseLearner extends Learner {
 		/*
 		 * @TODO: Your code here
 		 */
-
-		Classifier lrm = new SimpleLinearRegression();
+		//System.out.println(dataset.numInstances());
 		try {
 			this.model.buildClassifier(dataset);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.out.println("Num of Param: " + this.model.numParameters());
+        System.out.println("Weights:");
+        for (double coefficient : this.model.coefficients()) {
+			System.out.println(coefficient);
+		}
 		//System.out.println("Slope: " + this.model.getSlope());
         //System.out.println("Intercept: " + this.model.getIntercept());
-        
+       // System.out.println(this.model);
 		return this.model;
 	}
 
@@ -178,6 +188,14 @@ public class PointwiseLearner extends Learner {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		
+//		for(Query q: queryDocs.keySet()){
+//			System.out.println(q.query);
+//			for(Document d: queryDocs.get(q)){
+//				System.out.println("\t: "+d.url);
+//			}
+//		}
 		
 		for(Query q: queryDocs.keySet()){
 			String query = q.query;
@@ -227,13 +245,8 @@ public class PointwiseLearner extends Learner {
 				instance[5] = relevanceScore;
 				//System.out.println("[REMOVE] "+Arrays.toString(instance));
 				Instance inst = new DenseInstance(1.0, instance);
-				inst = new DenseInstance(1.0, instance); 
-				tf.features.add(new DenseInstance(1.0, instance));
-				Integer index = tf.features.size()-1;
-				//System.out.println(tf.features.size());
-				Map<String,Integer> docIndex = new HashMap<String,Integer>();
-				docIndex.put(url, index);
-				tf.index_map.put(query, docIndex);
+				//inst = new DenseInstance(1.0, instance); 
+				tf.add(query,url,inst);
 				
 			}
 		}
@@ -255,8 +268,7 @@ public class PointwiseLearner extends Learner {
 			//System.out.println("query: "+query);
 			for(Map.Entry<String, Integer> doc : entry.getValue().entrySet()) {
 				String url = doc.getKey();
-				Integer index = doc.getValue();
-				Instance instance = tf.features.get(index);
+				Instance instance = tf.getInstance(query, url);
 				double score = 0;
 				try {
 					score = model.classifyInstance(instance);
@@ -278,16 +290,22 @@ public class PointwiseLearner extends Learner {
 	//TODO: Remove. Only for test
 	public static void testRegressionModel() throws Exception{
 	
-		Instances data = new Instances(new BufferedReader(new FileReader("/Users/gupsumit/dev/Stanford/cs276/pa/pa4/SCPD-PA4/cs276_pa4/house.arff")));
+		Instances data = new Instances(new BufferedReader(new FileReader("house.arff")));
 		data.setClassIndex(data.numAttributes() - 1);
 		//build model
 		LinearRegression model = new LinearRegression();
+		//NaiveBayes model = new NaiveBayes();
 		model.buildClassifier(data); //the last instance with missing class is not used
 		System.out.println(model);
+		System.out.println("Num of Param: " + model.numParameters());
+        System.out.println("Weights:");
+        for (double coefficient : model.coefficients()) {
+			System.out.println(coefficient);
+		}
 		//classify the last instance
 		Instance myHouse = data.lastInstance();
 		double price = model.classifyInstance(myHouse);
-		//System.out.println("My house ("+myHouse+"): "+price);
+		System.out.println("My house ("+myHouse+"): "+price);
 		
 	}
 	
