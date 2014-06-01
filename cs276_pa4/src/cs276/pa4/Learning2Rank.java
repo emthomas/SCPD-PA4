@@ -44,7 +44,7 @@ public class Learning2Rank {
  		
 		/* Step (1): construct your feature matrix here */
 		Instances data = learner.extract_train_features(train_data_file, train_rel_file, idfs);
-		//System.out.println(data.get(0));
+		//System.out.println(data);
 		/* Step (2): implement your learning algorithm here */
 		model = learner.training(data);
 		//System.out.println(model);
@@ -85,8 +85,6 @@ public class Learning2Rank {
 			
 		    return ranked_queries;
 		}
-	
-	
 
 	/* This function output the ranking results in expected format */
 	public static void writeRankedResultsToFile(Map<String,List<String>> ranked_queries, PrintStream ps) {
@@ -142,10 +140,10 @@ public class Learning2Rank {
       (new File(trainOutFile)).delete();
       
 	    Map<String, List<String>> ranked_queries = test(test_data_file, model, task, idfs);
-	    System.out.println(model);
+	   // System.out.println(model);
 	    /* Output results */
 	    if(ranked_out_file.equals("")){ /* output to stdout */
-	      //writeRankedResultsToFile(ranked_queries, System.out);
+	      writeRankedResultsToFile(ranked_queries, System.out);
 	    } else { 						/* output to file */
 	      try {
 	        writeRankedResultsToFile(ranked_queries, new PrintStream(new FileOutputStream(ranked_out_file)));

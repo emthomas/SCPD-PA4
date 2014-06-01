@@ -4,10 +4,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.stanford.cs276.util.Pair;
 import weka.classifiers.Classifier;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.functions.LibSVM;
@@ -54,10 +57,10 @@ public class PointwiseLearner extends Learner {
 		/* Add data */
 		//Each instance here is a Feature Vector for each field with its IDF score and last is relevance score
 		//QueryTF-IDF_url,QueryTF-IDF_title,QueryTF-IDF_body,QueryTF-IDF_header,QueryTF-IDF_anchor, Score_From_Rel_File
-		double[] instance = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+		//double[] instance = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 		
 		//double[] instance = {Math.random()*10, Math.random()*15, Math.random()*20, Math.random()*25, Math.random()*30, Math.random()*100};
-		Instance inst = new DenseInstance(1.0, instance); 
+		//Instance inst = new DenseInstance(1.0, instance); 
 		//dataset.add(inst);
 		
 		//Query -> <d1, d2,...>
@@ -109,7 +112,7 @@ public class PointwiseLearner extends Learner {
 				}else{
 					//System.out.println("[REMOVE] NO Relevance Scor found for URL = "+d.url);
 				}
-				
+				double[] instance = new double[6];
 				instance[0] = tfIdfUrl;
 				instance[1] = tfIdfTitle;
 				instance[2] = tfIdfBody;
@@ -117,7 +120,6 @@ public class PointwiseLearner extends Learner {
 				instance[4] = tfIdfAnchor;
 				instance[5] = relevanceScore;
 				//System.out.println("[REMOVE] "+Arrays.toString(instance));
-				//double[] inst_test = {Math.random()*2, Math.random()*5, Math.random()*20, Math.random()*6, Math.random()*2, Math.random()*2};
 				
 				//inst = new DenseInstance(1.0, inst_test); 
 				//System.out.println("[REMOVE] "+inst);
@@ -166,11 +168,11 @@ public class PointwiseLearner extends Learner {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("Num of Param: " + this.model.numParameters());
-        System.out.println("Weights:");
-        for (double coefficient : this.model.coefficients()) {
-			System.out.println(coefficient);
-		}
+		//System.out.println("Num of Param: " + this.model.numParameters());
+        //System.out.println("Weights:");
+        //for (double coefficient : this.model.coefficients()) {
+		//	System.out.println(coefficient);
+		//}
 		//System.out.println("Slope: " + this.model.getSlope());
         //System.out.println("Intercept: " + this.model.getIntercept());
        // System.out.println(this.model);
@@ -266,6 +268,7 @@ public class PointwiseLearner extends Learner {
 			//features.get(index_map.get(query).get(url));
 			String query = entry.getKey();
 			//System.out.println("query: "+query);
+			List<Pair<String,Double>> urlAndScores = new ArrayList<Pair<String,Double>>();
 			for(Map.Entry<String, Integer> doc : entry.getValue().entrySet()) {
 				String url = doc.getKey();
 				Instance instance = tf.getInstance(query, url);
@@ -279,9 +282,22 @@ public class PointwiseLearner extends Learner {
 				if(!result.containsKey(query)) {
 					result.put(query, new ArrayList<String>());
 				}
-				result.get(query).add(url);
+				//result.get(query).add(url);
+				urlAndScores.add(new Pair<String,Double>(url,score));
 				//TODO compute score and add to map
 			}
+			//sort urls for query based on scores
+			Collections.sort(urlAndScores, new Comparator<Pair<String,Double>>() {
+				@Override
+				public int compare(Pair<String, Double> o1, Pair<String, Double> o2) 
+				{
+					return o2.getSecond().compareTo(o1.getSecond());
+				}	
+			});
+			for (Pair<String,Double> urlAndScore : urlAndScores) {
+				//	System.out.println("\turl: "+urlAndScore.getFirst()+"\tscore: "+urlAndScore.getSecond());
+				result.get(query).add(urlAndScore.getFirst());
+				}
 		}
 		
 		return result;
