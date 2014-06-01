@@ -83,7 +83,7 @@ public class PointwiseLearner extends Learner {
 				
 				for(String term: q.words){
 					double qIDF = Util.IDF(term, idfs);	
-					qIDF = 1;
+					//qIDF = 1;
 					double d_tf_url = getDocFieldTF(term, "url", tfDoc);
 					tfIdfUrl = tfIdfUrl + qIDF * d_tf_url;
 					

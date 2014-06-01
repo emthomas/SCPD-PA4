@@ -103,7 +103,7 @@ public class Util {
 
   public static double IDF(String term, Map<String,Double> dfs){
 	  
-	  if(dfs.containsKey(term)){
+	  if(dfs.containsKey(term) && dfs.get(term) != 0.0){
 		  return Math.log10(corpusCount/dfs.get(term));
 	  }else{
 		  return Math.log10((corpusCount+1));
