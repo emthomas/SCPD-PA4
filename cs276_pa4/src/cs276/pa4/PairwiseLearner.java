@@ -15,6 +15,8 @@ import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instances;
 import weka.core.SelectedTag;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Standardize;
 
 public class PairwiseLearner extends Learner {
   private LibSVM model;
@@ -124,9 +126,14 @@ public class PairwiseLearner extends Learner {
 				}
 			}
 		}
+		Standardize filter = new Standardize();
+		filter.setInputFormat(dataset);
+		Instances new_dataset = Filter.useFilter(dataset, filter);
+
+		System.out.println(new_dataset);
 		
-		dataset.setClassIndex(dataset.numAttributes() - 1);
-		return dataset;
+		//dataset.setClassIndex(dataset.numAttributes() - 1);
+		return new_dataset;
 	}
 	
 	private static double tfIDF(Query q, String type, Map<String,Map<String, Double>> tfDoc, Map<String, Double> idfs){
