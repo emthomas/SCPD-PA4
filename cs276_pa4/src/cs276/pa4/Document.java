@@ -12,6 +12,13 @@ public class Document {
 	public int page_rank = 0;
 	public Map<String, Integer> anchors = null; // term -> anchor_count
 
+	public Document(){
+	}
+	
+	public Document(String url){
+		this.url=url;
+	}
+	
 	// For debug
 	public String toString() {
 		StringBuilder result = new StringBuilder();

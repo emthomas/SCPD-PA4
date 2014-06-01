@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 public class Util {
+	
+	private static double corpusCount = 98998;
+	
   public static Map<Query,List<Document>> loadTrainData (String feature_file_name) throws Exception {
     Map<Query, List<Document>> result = new HashMap<Query, List<Document>>();
 
@@ -24,7 +27,8 @@ public class Util {
     Query query = null;
     Document doc = null;
     int numQuery=0; int numDoc=0;
-    while ((line = reader.readLine()) != null) {
+    while ((line = reader.readLine()) != null && !line.isEmpty()) {
+      //System.out.println("[REMOVE] line="+line);
       String[] tokens = line.split(":", 2);
       String key = tokens[0].trim();
       String value = tokens[1].trim();
@@ -97,6 +101,15 @@ public class Util {
     return dfs;
   }
 
+  public static double IDF(String term, Map<String,Double> dfs){
+	  
+	  if(dfs.containsKey(term)){
+		  return Math.log10(corpusCount/dfs.get(term));
+	  }else{
+		  return Math.log10((corpusCount+1));
+	  }
+  }
+  
   /* query -> (url -> score) */
   public static Map<String, Map<String, Double>> loadRelData(String rel_file_name) throws IOException{
     Map<String, Map<String, Double>> result = new HashMap<String, Map<String, Double>>();
@@ -111,7 +124,7 @@ public class Util {
     String line = null, query = null, url = null;
     int numQuery=0; 
     int numDoc=0;
-    while ((line = reader.readLine()) != null) {
+    while ((line = reader.readLine()) != null && !line.isEmpty()) {
       String[] tokens = line.split(":", 2);
       String key = tokens[0].trim();
       String value = tokens[1].trim();
