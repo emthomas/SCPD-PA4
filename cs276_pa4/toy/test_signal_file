@@ -1,0 +1,140 @@
+query: career services mock interview
+  url: http://aims.stanford.edu/career_change.html
+    title: aims
+    header: career resources
+    body_hits: career 25 61 89 135 140 144 210 284 294 350 550 1242 1710
+    body_hits: mock 149
+    body_hits: services 152 614 858 1243
+    body_length: 1797
+    pagerank: 3
+  url: http://forum.stanford.edu/careers/recruiting.php
+    title: stanford computer forum recruiting events
+    body_hits: career 46 119 187 195 198 234 241 246 272 330 333 337 354 368
+    body_hits: services 78 129 152 367
+    body_hits: interview 218
+    body_length: 400
+    pagerank: 6
+  url: http://studentaffairs.stanford.edu/cdc/services/career-counseling
+    title: career counseling student affairs
+    header: career development center
+    header: career counseling
+    header: select a career community based counselor
+    header: eligibility for cdc services
+    header: cdc career communities
+    header: career counseling
+    header: our services
+    header: career services for professional schools
+    body_hits: career 11 21 257 267 283 289 330 337 495 615 629 637 645 647 659 666 673 676 679
+    body_hits: services 24 57 439 494 594 599
+    body_hits: mock 369
+    body_hits: interview 370
+    body_length: 718
+    pagerank: 5
+    anchor_text: http studentaffairs stanford edu cdc services career counseling
+      stanford_anchor_count: 2
+    anchor_text: career counselors
+      stanford_anchor_count: 5
+    anchor_text: career counseling
+      stanford_anchor_count: 205
+    anchor_text: appointment with a career counselor
+      stanford_anchor_count: 1
+    anchor_text: make an appointment with a career counselor
+      stanford_anchor_count: 1
+    anchor_text: counseling services
+      stanford_anchor_count: 16
+  url: http://www.law.stanford.edu/organizations/offices/office-of-career-services/past-events?page=1
+    title: office of career services stanford law school
+    header: office of career services
+    body_hits: career 27 119 145 272 692 872
+    body_hits: services 28 859 873
+    body_hits: mock 158 652
+    body_hits: interview 171 334
+    body_length: 991
+    pagerank: 2
+  url: https://studentaffairs.stanford.edu/cdc/interviewing
+    title: interviewing student affairs
+    header: career development center
+    header: cdc career communities
+    header: our services
+    header: career services for professional schools
+    header: get interview practice
+    body_hits: career 11 21 158 160 172 179 186 189 192 224
+    body_hits: services 24
+    body_hits: interview 37 91 93 100 144 146 221 255
+    body_hits: mock 110 220
+    body_length: 278
+    pagerank: 5
+    anchor_text: interview information
+      stanford_anchor_count: 1
+  url: https://studentaffairs.stanford.edu/cdc/interviewing/etiquette
+    title: attire and etiquette student affairs
+    header: career development center
+    header: what kind of suit is appropriate for the business interview
+    header: can i wear a pantsuit to the interview
+    header: i was told to dress casually for my interview what is casual
+    header: how can i learn more about appropriate interview attire
+    header: cdc career communities
+    header: our services
+    header: career services for professional schools
+    header: get interview practice
+    body_hits: career 11 21 821 1196 1256 1258 1270 1277 1284 1287 1290 1322
+    body_hits: services 24
+    body_hits: interview 458 620 756 833 1219 1242 1244 1319 1353
+    body_hits: mock 1318
+    body_length: 1376
+    pagerank: 4
+  url: https://studentaffairs.stanford.edu/cdc/interviewing/to-ask
+    title: questions to ask employers student affairs
+    header: career development center
+    header: cdc career communities
+    header: our services
+    header: career services for professional schools
+    header: get interview practice
+    body_hits: career 11 21 156 288 290 302 309 316 319 322 354
+    body_hits: services 24
+    body_hits: interview 68 249 274 276 351 385
+    body_hits: mock 350
+    body_length: 408
+    pagerank: 4
+  url: https://studentaffairs.stanford.edu/cdc/interviewing/types
+    title: types of interviews student affairs
+    header: career development center
+    header: cdc career communities
+    header: our services
+    header: career services for professional schools
+    header: get interview practice
+    body_hits: career 11 21 70 240 440 442 454 461 468 471 474 506
+    body_hits: services 24
+    body_hits: interview 127 283 426 428 503 537
+    body_hits: mock 502
+    body_length: 560
+    pagerank: 4
+    anchor_text: interview types
+      stanford_anchor_count: 1
+  url: https://studentaffairs.stanford.edu/cdc/jobs/internships-finding
+    title: creating your own internship student affairs
+    header: career development center
+    header: step 4 prepare for an interview
+    header: cdc career communities
+    header: our services
+    header: career services for professional schools
+    body_hits: career 11 21 229 366 452 552 595 597 609 616 623 626 629
+    body_hits: services 24 265
+    body_hits: interview 65 414 428 435 449
+    body_hits: mock 448
+    body_length: 668
+    pagerank: 3
+  url: https://www.gsb.stanford.edu/programs/mba/career-impact/support
+    title: career support stanford graduate school of business
+    header: career support
+    header: career and life vision program
+    header: industry specific mock interviews
+    header: support for every stage of your career
+    body_hits: career 141 143 157 159 250 316 324 342 408 422 443 477 486 498 509 527 531 567
+    body_hits: services 496
+    body_length: 713
+    pagerank: 4
+    anchor_text: career support
+      stanford_anchor_count: 2
+    anchor_text: personalized career plan
+      stanford_anchor_count: 5

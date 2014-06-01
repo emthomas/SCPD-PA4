@@ -1,0 +1,383 @@
+query: career services mock interview
+  url: http://aims.stanford.edu/career_change.html
+    title: aims
+    header: career resources
+    body_hits: career 25 61 89 135 140 144 210 284 294 350 550 1242 1710
+    body_hits: mock 149
+    body_hits: services 152 614 858 1243
+    body_length: 1797
+    pagerank: 3
+  url: http://forum.stanford.edu/careers/recruiting.php
+    title: stanford computer forum recruiting events
+    body_hits: career 46 119 187 195 198 234 241 246 272 330 333 337 354 368
+    body_hits: services 78 129 152 367
+    body_hits: interview 218
+    body_length: 400
+    pagerank: 6
+  url: http://studentaffairs.stanford.edu/cdc/services/career-counseling
+    title: career counseling student affairs
+    header: career development center
+    header: career counseling
+    header: select a career community based counselor
+    header: eligibility for cdc services
+    header: cdc career communities
+    header: career counseling
+    header: our services
+    header: career services for professional schools
+    body_hits: career 11 21 257 267 283 289 330 337 495 615 629 637 645 647 659 666 673 676 679
+    body_hits: services 24 57 439 494 594 599
+    body_hits: mock 369
+    body_hits: interview 370
+    body_length: 718
+    pagerank: 5
+    anchor_text: http studentaffairs stanford edu cdc services career counseling
+      stanford_anchor_count: 2
+    anchor_text: career counselors
+      stanford_anchor_count: 5
+    anchor_text: career counseling
+      stanford_anchor_count: 205
+    anchor_text: appointment with a career counselor
+      stanford_anchor_count: 1
+    anchor_text: make an appointment with a career counselor
+      stanford_anchor_count: 1
+    anchor_text: counseling services
+      stanford_anchor_count: 16
+  url: http://www.law.stanford.edu/organizations/offices/office-of-career-services/past-events?page=1
+    title: office of career services stanford law school
+    header: office of career services
+    body_hits: career 27 119 145 272 692 872
+    body_hits: services 28 859 873
+    body_hits: mock 158 652
+    body_hits: interview 171 334
+    body_length: 991
+    pagerank: 2
+  url: https://studentaffairs.stanford.edu/cdc/interviewing
+    title: interviewing student affairs
+    header: career development center
+    header: cdc career communities
+    header: our services
+    header: career services for professional schools
+    header: get interview practice
+    body_hits: career 11 21 158 160 172 179 186 189 192 224
+    body_hits: services 24
+    body_hits: interview 37 91 93 100 144 146 221 255
+    body_hits: mock 110 220
+    body_length: 278
+    pagerank: 5
+    anchor_text: interview information
+      stanford_anchor_count: 1
+  url: https://studentaffairs.stanford.edu/cdc/interviewing/etiquette
+    title: attire and etiquette student affairs
+    header: career development center
+    header: what kind of suit is appropriate for the business interview
+    header: can i wear a pantsuit to the interview
+    header: i was told to dress casually for my interview what is casual
+    header: how can i learn more about appropriate interview attire
+    header: cdc career communities
+    header: our services
+    header: career services for professional schools
+    header: get interview practice
+    body_hits: career 11 21 821 1196 1256 1258 1270 1277 1284 1287 1290 1322
+    body_hits: services 24
+    body_hits: interview 458 620 756 833 1219 1242 1244 1319 1353
+    body_hits: mock 1318
+    body_length: 1376
+    pagerank: 4
+  url: https://studentaffairs.stanford.edu/cdc/interviewing/to-ask
+    title: questions to ask employers student affairs
+    header: career development center
+    header: cdc career communities
+    header: our services
+    header: career services for professional schools
+    header: get interview practice
+    body_hits: career 11 21 156 288 290 302 309 316 319 322 354
+    body_hits: services 24
+    body_hits: interview 68 249 274 276 351 385
+    body_hits: mock 350
+    body_length: 408
+    pagerank: 4
+  url: https://studentaffairs.stanford.edu/cdc/interviewing/types
+    title: types of interviews student affairs
+    header: career development center
+    header: cdc career communities
+    header: our services
+    header: career services for professional schools
+    header: get interview practice
+    body_hits: career 11 21 70 240 440 442 454 461 468 471 474 506
+    body_hits: services 24
+    body_hits: interview 127 283 426 428 503 537
+    body_hits: mock 502
+    body_length: 560
+    pagerank: 4
+    anchor_text: interview types
+      stanford_anchor_count: 1
+  url: https://studentaffairs.stanford.edu/cdc/jobs/internships-finding
+    title: creating your own internship student affairs
+    header: career development center
+    header: step 4 prepare for an interview
+    header: cdc career communities
+    header: our services
+    header: career services for professional schools
+    body_hits: career 11 21 229 366 452 552 595 597 609 616 623 626 629
+    body_hits: services 24 265
+    body_hits: interview 65 414 428 435 449
+    body_hits: mock 448
+    body_length: 668
+    pagerank: 3
+  url: https://www.gsb.stanford.edu/programs/mba/career-impact/support
+    title: career support stanford graduate school of business
+    header: career support
+    header: career and life vision program
+    header: industry specific mock interviews
+    header: support for every stage of your career
+    body_hits: career 141 143 157 159 250 316 324 342 408 422 443 477 486 498 509 527 531 567
+    body_hits: services 496
+    body_length: 713
+    pagerank: 4
+    anchor_text: career support
+      stanford_anchor_count: 2
+    anchor_text: personalized career plan
+      stanford_anchor_count: 5
+query: climbing wall hours
+  url: http://outdoored.stanford.edu/climbing/
+    title: climbing wall outdoor education
+    header: climbing wall
+    header: climbing wall links
+    header: facility hours
+    body_hits: climbing 32 85 106 113 127 173 189 194 280
+    body_hits: wall 114 195 201
+    body_length: 309
+    pagerank: 4
+    anchor_text: climbing
+      stanford_anchor_count: 28
+    anchor_text: climbing wall
+      stanford_anchor_count: 16
+    anchor_text: rock climbing
+      stanford_anchor_count: 1
+    anchor_text: comment on climbing wall by biaruomnula
+      stanford_anchor_count: 1
+  url: http://outdoored.stanford.edu/climbing/team/
+    title: climbing team outdoor education
+    header: climbing team
+    header: climbing wall links
+    header: facility hours
+    body_hits: climbing 32 62 101 139 152 175 180 342
+    body_hits: wall 181 224
+    body_length: 371
+    pagerank: 4
+    anchor_text: climbing team
+      stanford_anchor_count: 37
+  url: http://outdoored.stanford.edu/crag/crag-sponsors/
+    title: crag sponsors outdoor education
+    header: climbing wall links
+    body_hits: climbing 13 99 108 124 132 134 187
+    body_hits: wall 14 188
+    body_length: 230
+    pagerank: 3
+  url: http://stanford.edu/group/alpineclub/08a1006anch.txt
+    title:
+    body_hits: climbing 18 89 93 126 195 396 475 486 488 497
+    body_hits: hours 395
+    body_hits: wall 397
+    body_length: 599
+    pagerank: 0
+  url: http://www.stanford.edu/dept/pe/cgi-bin/cardinalrec/facilities/aoerc/
+    title: arrillaga outdoor education and recreation center aoerc recreation
+    header: facility hours
+    body_hits: hours 16 673 674
+    body_hits: climbing 140
+    body_hits: wall 141
+    body_length: 725
+    pagerank: 5
+  url: http://www.stanford.edu/group/alpineclub/info/classes.html
+    title: stanford alpine club instructional trips
+    body_hits: climbing 41 44 72 369 517 605 662 696 772 796 837 921 1024 1104 1188 1283 1354 1368 1410 1647 1666 1720 1779 1942 1982 2015 2116 2198 2219 2289 2365 2380
+    body_hits: wall 42 1943 2016
+    body_hits: hours 2165
+    body_length: 2550
+    pagerank: 1
+  url: http://www.stanford.edu/~clint/index/
+    title: index town wall rock climbs
+    header: index town wall rock climbs
+    header: lower lump inner wall
+    header: lower wall
+    header: the country trail to upper wall
+    header: upper wall
+    body_hits: climbing 11 42 860
+    body_hits: wall 173 339 357 360 363 368 373 378 400 409
+    body_length: 953
+    pagerank: 3
+    anchor_text: index town wall
+      stanford_anchor_count: 1
+  url: https://outdoored.stanford.edu/center/
+    title: outdoor center outdoor education
+    header: outdoor center hours
+    body_hits: climbing 32 94 112 289
+    body_hits: hours 209
+    body_length: 318
+    pagerank: 5
+  url: https://outdoored.stanford.edu/climbing/crag/schedule/
+    title: schedule outdoor education
+    header: sunday april 6 open climbing competition
+    header: climbing info
+    header: facility hours
+    body_hits: climbing 32 155 158 163 243 330
+    body_hits: wall 156 164 207
+    body_length: 359
+    pagerank: 3
+query: cs224n natural language processing course instructor
+  url: http://explorecourses.stanford.edu/CourseSearch/search?page=7&q=CS&catalog=&view=timeschedule&filter-catalognumber-CS=on
+    title: stanford university explore courses
+    header: cs 224n natural language processing linguist 284
+    header: cs 224s spoken language processing linguist 285
+    header: cs 224u natural language understanding linguist 188 linguist 288
+    body_hits: language 520 589
+    body_length: 649
+    pagerank: 1
+  url: http://explorecourses.stanford.edu/search?view=catalog&filter-coursestatus-Active=on&page=0&catalog=&academicYear=&q=CS+221&collapse=
+    title: stanford university explore courses
+    header: cs 224n natural language processing linguist 284
+    header: cs 224s spoken language processing linguist 285
+    header: linguist 285 spoken language processing cs 224s
+    body_hits: natural 58 152
+    body_hits: language 59 144 250 353 602 671
+    body_hits: processing 60 142 157
+    body_length: 725
+    pagerank: 1
+  url: http://scpd.stanford.edu/search/publicTermScheduleSearch.do?method=load&term=Spring%202009-10
+    title: course schedule stanford university online
+    header: course schedule
+    body_hits: course 50 51 1021 1627 1650
+    body_hits: instructor 59
+    body_hits: natural 389
+    body_hits: language 390 440
+    body_hits: processing 391 599
+    body_hits: cs224n 392
+    body_length: 1747
+    pagerank: 0
+    anchor_text: spring graduate course enrollment now open
+      stanford_anchor_count: 1
+  url: http://see.stanford.edu/see/courseinfo.aspx?coll=63480b48-8819-4efd-8412-263f1a472f5a
+    title: stanford school of engineering stanford engineering everywhere
+    header: artificial intelligence natural language processing
+    header: course content
+    header: complete course material downloads
+    body_hits: course 10 22 25 368 378 382 390 398 403
+    body_hits: instructor 16
+    body_hits: natural 38 78 210 238 270
+    body_hits: language 39 211 236 239 271
+    body_hits: processing 40 68 84 212 240 272
+    body_length: 420
+    pagerank: 6
+    anchor_text: natural language processing cs224n
+      stanford_anchor_count: 3
+    anchor_text: course home
+      stanford_anchor_count: 3
+  url: http://stanford.edu/~cpiech/cs221/apps/machineTranslation.html
+    title: cs221
+    body_hits: language 381 432 473 521 572
+    body_hits: natural 571
+    body_hits: processing 573
+    body_hits: course 601
+    body_length: 682
+    pagerank: 2
+  url: http://symsys.stanford.edu/viewing/htmldocument/13915
+    title: symbolic systems stanford master's requirements
+    body_hits: course 97 188 342 360 391 698 786 942 1048
+    body_hits: natural 842 1022
+    body_hits: language 843 865 1023 1056 1131 1174
+    body_hits: processing 844 916 1024
+    body_hits: instructor 1070
+    body_length: 1479
+    pagerank: 2
+  url: http://www.stanford.edu/class/cs224n/
+    title: cs 224n ling 284
+    header: welcome to cs224n
+    header: course website
+    header: course description
+    header: course information
+    body_hits: natural 5 28 278 332
+    body_hits: language 6 29 279 307
+    body_hits: processing 7 30 280 299 323 341
+    body_hits: cs224n 23 27 88 97 162 193 238 433 437 448 459
+    body_hits: course 41 104 109 270 309 363
+    body_hits: instructor 419
+    body_length: 513
+    pagerank: 5
+    anchor_text: stanford cs224n
+      stanford_anchor_count: 1
+    anchor_text: cs 224n ling 237 natural language processing
+      stanford_anchor_count: 1
+    anchor_text: natural language processing
+      stanford_anchor_count: 9
+    anchor_text: stanford nlp class cs224n
+      stanford_anchor_count: 1
+    anchor_text: cs224n
+      stanford_anchor_count: 11
+    anchor_text: cs224n natural language processing
+      stanford_anchor_count: 1
+    anchor_text: natural language processing cs224n
+      stanford_anchor_count: 1
+    anchor_text: http cs224n stanford edu
+      stanford_anchor_count: 1
+    anchor_text: course link
+      stanford_anchor_count: 1
+    anchor_text: cs 224n natural language processing spr 2001
+      stanford_anchor_count: 1
+    anchor_text: cs 224n natural language processing spr 2000
+      stanford_anchor_count: 1
+  url: http://www.stanford.edu/class/cs224n/grading.html
+    title: cs 224n ling 284 grading
+    body_hits: natural 5
+    body_hits: language 6
+    body_hits: processing 7
+    body_hits: course 379 765
+    body_hits: instructor 766
+    body_length: 945
+    pagerank: 4
+    anchor_text: http cs224n stanford edu grading html
+      stanford_anchor_count: 1
+  url: https://class.stanford.edu/courses/Engineering/CS224N/Natural_Language_Processing/about
+    title: about cs224n stanford openedx
+    header: engineering cs224n natural language processing
+    header: cs224n natural language processing
+    header: about this course
+    header: course staff
+    body_hits: cs224n 56 215
+    body_hits: course 59 98 152 202 212 213
+    body_hits: natural 67 121
+    body_hits: language 68 96
+    body_hits: processing 69 88 112 130
+    body_hits: instructor 176
+    body_length: 253
+    pagerank: 4
+    anchor_text: https class stanford edu courses engineering cs224n natural_language_processing about
+      stanford_anchor_count: 2
+  url: https://linguistics.stanford.edu/courses/
+    title: stanford linguistics courses
+    header: linguist 52n spoken sexuality language and the social construction of sexuality femgen 52n
+    header: linguist 63n the language of comics
+    header: linguist 140 language acquisition i linguist 240
+    header: linguist 141 language and gesture
+    header: linguist 150 language in society
+    header: linguist 156 language and gender
+    header: linguist 162 history through language
+    header: linguist 163 history of the english language english 171h
+    header: linguist 183 programming and algorithms for natural language processing linguist 283
+    header: linguist 188 natural language understanding cs 224u linguist 288
+    header: linguist 191 linguistics and the teaching of english as a second foreign language linguist 291
+    header: linguist 240 language acquisition i linguist 140
+    header: linguist 241 language acquisition ii
+    header: linguist 256 language gender and sexuality
+    header: linguist 283 programming and algorithms for natural language processing linguist 183
+    header: linguist 284 natural language processing cs 224n
+    header: linguist 285 spoken language processing cs 224s
+    header: linguist 288 natural language understanding cs 224u linguist 188
+    header: linguist 291 linguistics and the teaching of english as a second foreign language linguist 191
+    body_hits: language 65 68 92 96 170 239 268 286 375 398 408 437 510 538 921 1076 1230 1368 1395 1400 1406 1413 1469 1538 1561 1657 1669 1729 1774 1819 1826 1877 1884 1947 2078 2176 2194 2202 2350 2362 2365 3034 3275 3386 3596 3948 4075 4138 4270 4368 4386 4394
+    body_hits: course 259 367 617 1142 1166 1209 1722 1776 1859 2719 3500 3814 4583
+    body_hits: instructor 838 1102 1200 1631 2425 2945 3060 3101 3134 3700 3746
+    body_hits: natural 1075 1159 3033 4083
+    body_hits: processing 1077 1941 1978 2467 2985 3035 3942 3979 4073 4088
+    body_length: 4619
+    pagerank: 5
