@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import weka.classifiers.Classifier;
+import weka.classifiers.functions.LibSVM;
 import weka.classifiers.functions.SimpleLinearRegression;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -17,7 +18,12 @@ import weka.core.Instances;
 import weka.classifiers.functions.LinearRegression;
 
 public class PointwiseLearner extends Learner {
-
+	private SimpleLinearRegression model;
+	
+	  public PointwiseLearner() {
+		  this.model = new SimpleLinearRegression();
+	  }
+	  
 	@Override
 	public Instances extract_train_features(String train_data_file,
 			String train_rel_file, Map<String, Double> idfs) throws Exception{
@@ -60,7 +66,7 @@ public class PointwiseLearner extends Learner {
 		
 		for(Query q: queryDocs.keySet()){
 			String query = q.query;
-			System.out.println("[REMOVE] Query = "+query);
+			//System.out.println("[REMOVE] Query = "+query);
 			
 			//Map<String,Double> tfQuery = AScorer.getQueryFreqs(q);
 			for(Document d: queryDocs.get(q)){
@@ -97,9 +103,9 @@ public class PointwiseLearner extends Learner {
 				Map<String, Double> urlRelScore = queryDocScore.get(q.query);
 				if(urlRelScore.containsKey(d.url)){
 					relevanceScore = urlRelScore.get(d.url);
-					System.out.println("[REMOVE] Relevance Score URL("+d.url+") = "+relevanceScore);
+					//System.out.println("[REMOVE] Relevance Score URL("+d.url+") = "+relevanceScore);
 				}else{
-					System.out.println("[REMOVE] NO Relevance Scor found for URL = "+d.url);
+					//System.out.println("[REMOVE] NO Relevance Scor found for URL = "+d.url);
 				}
 				
 				instance[0] = tfIdfUrl;
@@ -108,7 +114,7 @@ public class PointwiseLearner extends Learner {
 				instance[3] = tfIdfHeader;
 				instance[4] = tfIdfAnchor;
 				instance[5] = relevanceScore;
-				System.out.println("[REMOVE] "+Arrays.toString(instance));
+				//System.out.println("[REMOVE] "+Arrays.toString(instance));
 				
 				inst = new DenseInstance(1.0, instance); 
 				dataset.add(inst);
@@ -151,26 +157,94 @@ public class PointwiseLearner extends Learner {
 
 		Classifier lrm = new SimpleLinearRegression();
 		try {
-			lrm.buildClassifier(dataset);
+			this.model.buildClassifier(dataset);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return lrm;
+		//System.out.println("Slope: " + this.model.getSlope());
+        //System.out.println("Intercept: " + this.model.getIntercept());
+        
+		return this.model;
 	}
 
 	@Override
 	public TestFeatures extract_test_features(String test_data_file,
 			Map<String, Double> idfs) {
-		/*
-		 * @TODO: Your code here
-		 */
-		return null;
+		TestFeatures tf = new TestFeatures();
+		
+		Map<Query,List<Document>> queryDocs = null;
+		try {
+			queryDocs = Util.loadTrainData(test_data_file);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		for(Query q: queryDocs.keySet()){
+			String query = q.query;
+			//System.out.println("[REMOVE] Query = "+query);
+			
+			//Map<String,Double> tfQuery = AScorer.getQueryFreqs(q);
+			for(Document d: queryDocs.get(q)){
+				Map<String,Map<String, Double>> tfDoc = AScorer.getDocTermFreqs(d, q);
+				
+				//Map<String,Double> fieldWeight = new HashMap<String, Double>();
+				double tfIdfUrl = 0.0;
+				double tfIdfTitle = 0.0;
+				double tfIdfBody = 0.0;
+				double tfIdfHeader = 0.0;
+				double tfIdfAnchor = 0.0;
+				double relevanceScore = 0.0;
+				
+				for(String term: q.words){
+					double qIDF = Util.IDF(term, idfs);					
+					double d_tf_url = getDocFieldTF(term, "url", tfDoc);
+					tfIdfUrl = tfIdfUrl + qIDF * d_tf_url;
+					
+					double d_tf_title = getDocFieldTF(term, "title", tfDoc);
+					tfIdfTitle = tfIdfTitle + qIDF * d_tf_title;
+					
+					double d_tf_body = getDocFieldTF(term, "body", tfDoc);
+					tfIdfBody = tfIdfBody + qIDF * d_tf_body;
+					
+					double d_tf_header = getDocFieldTF(term, "header", tfDoc);
+					tfIdfHeader = tfIdfHeader + qIDF * d_tf_header;
+					
+					double d_tf_anchor = getDocFieldTF(term, "anchor", tfDoc);
+					tfIdfAnchor = tfIdfAnchor + qIDF * d_tf_anchor;
+				}
+				
+				//Getting Relevance Score
+				String url = d.url;
+				double[] instance = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+				
+				//double[] instance = {Math.random()*10, Math.random()*15, Math.random()*20, Math.random()*25, Math.random()*30, Math.random()*100};
+				 
+				instance[0] = tfIdfUrl;
+				instance[1] = tfIdfTitle;
+				instance[2] = tfIdfBody;
+				instance[3] = tfIdfHeader;
+				instance[4] = tfIdfAnchor;
+				instance[5] = relevanceScore;
+				//System.out.println("[REMOVE] "+Arrays.toString(instance));
+				Instance inst = new DenseInstance(1.0, instance);
+				inst = new DenseInstance(1.0, instance); 
+				tf.features.add(new DenseInstance(1.0, instance));
+				Integer index = tf.features.size()-1;
+				//System.out.println(tf.features.size());
+				Map<String,Integer> docIndex = new HashMap<String,Integer>();
+				docIndex.put(url, index);
+				tf.index_map.put(query, docIndex);
+				
+			}
+		}
+		
+		return tf;
 	}
 
 	@Override
 	public Map<String, List<String>> testing(TestFeatures tf,
 			Classifier model) {
+		Map<String, List<String>> result = new HashMap<String, List<String>>();
 		/*
 		 * @TODO: Your code here
 		 */
@@ -178,16 +252,27 @@ public class PointwiseLearner extends Learner {
 		for(Map.Entry<String, Map<String, Integer>> entry : tf.index_map.entrySet()) {
 			//features.get(index_map.get(query).get(url));
 			String query = entry.getKey();
-			
+			//System.out.println("query: "+query);
 			for(Map.Entry<String, Integer> doc : entry.getValue().entrySet()) {
 				String url = doc.getKey();
 				Integer index = doc.getValue();
 				Instance instance = tf.features.get(index);
+				double score = 0;
+				try {
+					score = model.classifyInstance(instance);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				//System.out.println("\turl: "+url+": "+score);
+				if(!result.containsKey(query)) {
+					result.put(query, new ArrayList<String>());
+				}
+				result.get(query).add(url);
 				//TODO compute score and add to map
 			}
 		}
 		
-		return null;
+		return result;
 	}
 	
 	//TODO: Remove. Only for test
