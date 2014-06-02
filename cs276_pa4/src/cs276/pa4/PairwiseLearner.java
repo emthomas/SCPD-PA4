@@ -149,9 +149,10 @@ Instances datasetPair = null;
 		for(Query q: queryDocs.keySet()){
 			String query = q.query;
 			//for(Document d: queryDocs.get(q)){
-			for(int i=1; i<queryDocs.get(q).size();i++) {
-				String prevUrl = queryDocs.get(q).get(i-1).url;
-				String currUrl = queryDocs.get(q).get(i).url;
+			for(int i=0; i<queryDocs.get(q).size()-1;i++) {
+				for (int j = i+1; j<queryDocs.get(q).size(); j++) {
+				String prevUrl = queryDocs.get(q).get(i).url;
+				String currUrl = queryDocs.get(q).get(j).url;
 				Instance prev = tf.getInstance(query, prevUrl);
 				Instance curr = tf.getInstance(query, currUrl);
 				if(prev.value(5)!=curr.value(5)) {
@@ -172,69 +173,10 @@ Instances datasetPair = null;
 				datasetPair.add(merge);
 				}
 			}
-			String prevUrl = queryDocs.get(q).get(0).url;
-			String currUrl = queryDocs.get(q).get(queryDocs.get(q).size()-1).url;
-			Instance prev = tf.getInstance(query, prevUrl);
-			Instance curr = tf.getInstance(query, currUrl);
-			if(prev.value(5)!=curr.value(5)) {
-			String C = prev.value(5)>curr.value(5) ? "+1" : "-1";
-			double url = prev.value(0)-curr.value(0);
-			double title = prev.value(1)-curr.value(1);
-			double body = prev.value(2)-curr.value(2);
-			double header = prev.value(3)-curr.value(3);
-			double anchor = prev.value(4)-curr.value(4);
-			Instance merge = new DenseInstance(6);
-			merge.setDataset(datasetPair);
-			merge.setValue(0, url);
-			merge.setValue(1, title);
-			merge.setValue(2, body);
-			merge.setValue(3, header);
-			merge.setValue(4, anchor);
-			merge.setValue(5, C);
-			datasetPair.add(merge);
 			}
+			
 		}
 		System.out.println(datasetPair);
-		
-//		for(Query q: queryDocs.keySet()){
-//			String query = q.query;
-//			//System.out.println(query);
-//			for(Document d: queryDocs.get(q)){
-//				Instance prev = new DenseInstance(6);
-//				Instance curr = new DenseInstance(6);
-//				if(end==start) {
-//					prev = (DenseInstance)new_dataset.get(end).copy();
-//					curr = (DenseInstance)new_dataset.get(queryDocs.get(q).size()-1).copy();
-//				} else {
-//					prev = (DenseInstance)new_dataset.get(end-1).copy();
-//					curr = (DenseInstance)new_dataset.get(end).copy();
-//				}
-//				String C = prev.value(5)>curr.value(5) ? "+1" : "-1";
-//				double url = prev.value(0)-curr.value(0);
-//				double title = prev.value(1)-curr.value(1);
-//				double body = prev.value(2)-curr.value(2);
-//				double header = prev.value(3)-curr.value(3);
-//				double anchor = prev.value(4)-curr.value(4);
-//				Instance merge = new DenseInstance(6);
-//				merge.setDataset(datasetPair);
-//				merge.setValue(0, url);
-//				merge.setValue(1, title);
-//				merge.setValue(2, body);
-//				merge.setValue(3, header);
-//				merge.setValue(4, anchor);
-//				merge.setValue(5, C);
-//				datasetPair.add(merge);
-////				System.out.println("prev: "+prev);
-////				System.out.println("curr: "+curr);
-////				System.out.println("merg: "+merge);
-//				//System.out.println(url+","+title+","+body+","+header+","+anchor+","+C);
-//				//System.out.println("\t"+d.url+": "+new_dataset.get(end++).value(5));
-//			end++;
-//			}
-//			start=end;
-//		}
-//		System.out.println(datasetPair);
-		
 		datasetPair.setClassIndex(datasetPair.numAttributes() - 1);
 		return datasetPair;
 	}
@@ -284,78 +226,87 @@ Instances datasetPair = null;
 //		}
 		//System.out.println("Slope: " + this.model.getSlope());
         //System.out.println("Intercept: " + this.model.getIntercept());
-        System.out.println("Weights: " + this.model.getWeights());
-        System.out.println("model: "+this.model.getKernelType());
+		for (double coefficient : this.model.coefficients()) {
+			System.out.println(coefficient);
+		}
 		return this.model;
 	}
 
 	@Override
 	public TestFeatures extract_test_features(String test_data_file,
-			Map<String, Double> idfs) {
+			Map<String, Double> idfs) throws Exception {
 	
-	TestFeatures tf = new TestFeatures("pair");
+		TestFeatures tf = new TestFeatures("pair");
+		Instances dataset = null;
+		
+		/* Build attributes list */
+		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+		attributes.add(new Attribute("url_w"));
+		attributes.add(new Attribute("title_w"));
+		attributes.add(new Attribute("body_w"));
+		attributes.add(new Attribute("header_w"));
+		attributes.add(new Attribute("anchor_w"));
+		attributes.add(new Attribute("class",Arrays.asList("-1","+1")));
+		dataset = new Instances("test_dataset", attributes, 0);
+		
+		/* Add data */
+		Map<Query,List<Document>> queryDocs = Util.loadTrainData(test_data_file);
+		
+		for(Query q: queryDocs.keySet()){
+			String query = q.query;
+			System.out.println(query);
+			for(Document d: queryDocs.get(q)){
+				Map<String,Map<String, Double>> tfDoc = AScorer.getDocTermFreqs(d, q);
+				
+				
+				double tfIdfUrl = 0.0;
+				double tfIdfTitle = 0.0;
+				double tfIdfBody = 0.0;
+				double tfIdfHeader = 0.0;
+				double tfIdfAnchor = 0.0;
+				double relevanceScore = 0.0;
+				
+				for(String term: q.words){
+					double qIDF = Util.IDF(term, idfs);
+					double d_tf_url = getDocFieldTF(term, "url", tfDoc);
+					tfIdfUrl = tfIdfUrl + qIDF * d_tf_url;
+					
+					double d_tf_title = getDocFieldTF(term, "title", tfDoc);
+					tfIdfTitle = tfIdfTitle + qIDF * d_tf_title;
+					
+					double d_tf_body = getDocFieldTF(term, "body", tfDoc);
+					tfIdfBody = tfIdfBody + qIDF * d_tf_body;
+					
+					double d_tf_header = getDocFieldTF(term, "header", tfDoc);
+					tfIdfHeader = tfIdfHeader + qIDF * d_tf_header;
+					
+					double d_tf_anchor = getDocFieldTF(term, "anchor", tfDoc);
+					tfIdfAnchor = tfIdfAnchor + qIDF * d_tf_anchor;
+				}
+				
+				//Getting Relevance Score
+				String url = d.url;
 	
-	Map<Query,List<Document>> queryDocs = null;
-	try {
-		queryDocs = Util.loadTrainData(test_data_file);
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
-	
-	for(Query q: queryDocs.keySet()){
-		String query = q.query;
-		for(Document d: queryDocs.get(q)){
-			Map<String,Map<String, Double>> tfDoc = AScorer.getDocTermFreqs(d, q);
-			
-			double tfIdfUrl = 0.0;
-			double tfIdfTitle = 0.0;
-			double tfIdfBody = 0.0;
-			double tfIdfHeader = 0.0;
-			double tfIdfAnchor = 0.0;
-			double relevanceScore = 0.0;
-			
-			for(String term: q.words){
-				double qIDF = Util.IDF(term, idfs);					
-				double d_tf_url = getDocFieldTF(term, "url", tfDoc);
-				tfIdfUrl = tfIdfUrl + qIDF * d_tf_url;
-				
-				double d_tf_title = getDocFieldTF(term, "title", tfDoc);
-				tfIdfTitle = tfIdfTitle + qIDF * d_tf_title;
-				
-				double d_tf_body = getDocFieldTF(term, "body", tfDoc);
-				tfIdfBody = tfIdfBody + qIDF * d_tf_body;
-				
-				double d_tf_header = getDocFieldTF(term, "header", tfDoc);
-				tfIdfHeader = tfIdfHeader + qIDF * d_tf_header;
-				
-				double d_tf_anchor = getDocFieldTF(term, "anchor", tfDoc);
-				tfIdfAnchor = tfIdfAnchor + qIDF * d_tf_anchor;
+				double[] instance = new double[6];
+				instance[0] = tfIdfUrl;
+				instance[1] = tfIdfTitle;
+				instance[2] = tfIdfBody;
+				instance[3] = tfIdfHeader;
+				instance[4] = tfIdfAnchor;
+				instance[5] = relevanceScore;
+				dataset.add(new DenseInstance(1.0, instance));
+				tf.add(query, url, new DenseInstance(1.0, instance));
 			}
-			
-			//Getting Relevance Score
-			String url = d.url;
-			double[] instance = new double[6];
-			
-			//double[] instance = {Math.random()*10, Math.random()*15, Math.random()*20, Math.random()*25, Math.random()*30, Math.random()*100};
-			 
-			instance[0] = tfIdfUrl;
-			instance[1] = tfIdfTitle;
-			instance[2] = tfIdfBody;
-			instance[3] = tfIdfHeader;
-			instance[4] = tfIdfAnchor;
-			instance[5] = relevanceScore;
-			Instance inst = new DenseInstance(6);
-			inst.setDataset(tf.features);
-			inst.setValue(0, tfIdfUrl);
-			inst.setValue(1, tfIdfTitle);
-			inst.setValue(2, tfIdfBody);
-			inst.setValue(3, tfIdfHeader);
-			inst.setValue(4, tfIdfAnchor);
-			inst.setValue(5, "-1");
-			tf.add(query,url,inst);
-			
 		}
-	}
+		
+		System.out.println(tf.features);
+		/* Set last attribute as target */
+		dataset.setClassIndex(dataset.numAttributes() - 1);
+		Standardize filter = new Standardize();
+		filter.setInputFormat(dataset);
+		Instances new_dataset = Filter.useFilter(dataset, filter);
+		tf.StandardizeFeatures();
+		System.out.println(tf.features);
 	
 	return tf;
 	}
@@ -411,22 +362,27 @@ Instances datasetPair = null;
 	public static void testRegressionModel() throws Exception{
 	
 		Instances data = new Instances(new BufferedReader(new FileReader("libsvm.arff")));
+		PairwiseLearner learner = new PairwiseLearner(true);
 		data.setClassIndex(data.numAttributes() - 1);
 		//build model
-		LibSVM model = new LibSVM();
-		model.setKernelType(new SelectedTag(LibSVM.KERNELTYPE_LINEAR, LibSVM.TAGS_KERNELTYPE));
+		//LibSVM model = new LibSVM();
+		//model.setKernelType(new SelectedTag(LibSVM.KERNELTYPE_LINEAR, LibSVM.TAGS_KERNELTYPE));
 		//NaiveBayes model = new NaiveBayes();
-		model.buildClassifier(data); //the last instance with missing class is not used
-		System.out.println(data);
-		System.out.println(model);
+		//model.buildClassifier(data); //the last instance with missing class is not used
+		learner.model.buildClassifier(data);
+		//System.out.println(data);
+		//System.out.println(model);
 		//System.out.println("Num of Param: " + model.numParameters());
         System.out.println("Weights:");
-        for (double coefficient : model.coefficients()) {
+//        for (double coefficient : model.coefficients()) {
+//			System.out.println(coefficient);
+//		}
+        for (double coefficient : learner.model.coefficients()) {
 			System.out.println(coefficient);
 		}
 		//classify the last instance
 		Instance myHouse = data.lastInstance();
-		double price = model.classifyInstance(myHouse);
+		double price = learner.model.classifyInstance(myHouse);
 		System.out.println("My house ("+myHouse+"): "+price);
 		
 	}

@@ -227,18 +227,23 @@ public class PointwiseLearner extends Learner {
 				
 				//double[] instance = {Math.random()*10, Math.random()*15, Math.random()*20, Math.random()*25, Math.random()*30, Math.random()*100};
 				 
-				instance[0] = tfIdfUrl;
-				instance[1] = tfIdfTitle;
-				instance[2] = tfIdfBody;
-				instance[3] = tfIdfHeader;
-				instance[4] = tfIdfAnchor;
-				instance[5] = relevanceScore;
-				Instance inst = new DenseInstance(1.0, instance);
-				tf.add(query,url,inst);
-				
+				Instance merge = new DenseInstance(6);
+				merge.setDataset(tf.features);
+				merge.setValue(0, tfIdfUrl);
+				merge.setValue(1, tfIdfTitle);
+				merge.setValue(2, tfIdfBody);
+				merge.setValue(3, tfIdfHeader);
+				merge.setValue(4, tfIdfAnchor);
+				merge.setValue(5, "-1");
+				tf.add(query,url,merge);
 			}
 		}
-		
+		try {
+			tf.StandardizeFeatures();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return tf;
 	}
 
