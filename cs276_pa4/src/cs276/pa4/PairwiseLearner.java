@@ -324,7 +324,7 @@ Instances datasetPair = null;
 				if(!result.containsKey(query)) {
 					result.put(query, new ArrayList<String>());
 				}
-				urlAndScores.add(new Pair<String,Instance>(query,tf.getInstance(query, url)));
+				urlAndScores.add(new Pair<String,Instance>(url,tf.getInstance(query, url)));
 				//TODO compute score and add to map
 			}
 			//sort urls for query based on scores
@@ -362,7 +362,7 @@ Instances datasetPair = null;
 			});
 			
 			for (Pair<String,Instance> urlAndScore : urlAndScores) {
-					//System.out.println("\turl: "+urlAndScore.getFirst()+"\tscore: "+urlAndScore.getSecond());
+				//System.out.println("\turl: "+urlAndScore.getFirst()+"\tscore: "+urlAndScore.getSecond());
 				result.get(query).add(urlAndScore.getFirst());
 				}
 		}
