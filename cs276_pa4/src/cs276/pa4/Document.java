@@ -35,6 +35,36 @@ public class Document {
 		return result.toString();
 	}
 	
+	
+	public int[] getLengths() {
+		//String[] TFTYPES = {"url","title","body","header","anchor"};
+		int[] TYPESLEN = {0,0,0,0,0};
+		
+		if(url!=null) {
+			TYPESLEN[0] = url.split("[,.\\s\\-:\\?/]").length;
+		}
+		
+		if(title!=null) {
+			TYPESLEN[1] = title.split("[w+,.\\s\\-:\\?/]").length;
+		}
+		
+		TYPESLEN[2] = body_length;
+		
+		if(headers!=null) {
+			for(String header : headers) {
+				TYPESLEN[3] += header.split("\\s+").length;
+			}
+		}
+		
+		if(anchors!=null) {
+			for(int count : anchors.values()) {
+				TYPESLEN[4] += count;
+			}
+		}
+		
+		return TYPESLEN;
+	}
+	
 	//Implementing here with two List<String>
 	//Should be easy enough to use arrays, or streams, or whatever.
 	public int getSmallestWindow(Query q) {
