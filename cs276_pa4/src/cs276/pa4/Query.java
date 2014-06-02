@@ -2,8 +2,10 @@ package cs276.pa4;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Query implements Comparable<Query>{
 	String query;
@@ -28,5 +30,15 @@ public class Query implements Comparable<Query>{
 	@Override
 	public String toString() {
 	  return query;
+	}
+	
+	public int getUniqueTermsCount() {
+		Set<String> terms = new HashSet<String>();
+		if(query==null)
+			return 0;
+		for(String term : words) {
+			terms.add(term);
+		}
+		return terms.size();
 	}
 }
