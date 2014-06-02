@@ -74,7 +74,7 @@ public class PairwiseLearner extends Learner {
 		
 		for(Query q: queryDocs.keySet()){
 			String query = q.query;
-			System.out.println(query);
+			//System.out.println(query);
 			for(Document d: queryDocs.get(q)){
 				Map<String,Map<String, Double>> tfDoc = AScorer.getDocTermFreqs(d, q);
 				
@@ -109,7 +109,7 @@ public class PairwiseLearner extends Learner {
 				Map<String, Double> urlRelScore = queryDocScore.get(q.query);
 				if(urlRelScore.containsKey(d.url)){
 					relevanceScore = urlRelScore.get(d.url);
-					System.out.println("\t"+url+": "+relevanceScore);
+				//	System.out.println("\t"+url+": "+relevanceScore);
 				}
 				double[] instance = new double[6];
 				instance[0] = tfIdfUrl;
@@ -123,14 +123,14 @@ public class PairwiseLearner extends Learner {
 			}
 		}
 		
-		System.out.println(tf.features);
+		//System.out.println(tf.features);
 		/* Set last attribute as target */
 		dataset.setClassIndex(dataset.numAttributes() - 1);
 		Standardize filter = new Standardize();
 		filter.setInputFormat(dataset);
 		Instances new_dataset = Filter.useFilter(dataset, filter);
 		tf.StandardizeFeatures();
-		System.out.println(tf.features);
+		//System.out.println(tf.features);
 		
 		
 Instances datasetPair = null;
@@ -176,7 +176,7 @@ Instances datasetPair = null;
 			}
 			
 		}
-		System.out.println(datasetPair);
+		//System.out.println(datasetPair);
 		datasetPair.setClassIndex(datasetPair.numAttributes() - 1);
 		return datasetPair;
 	}
@@ -212,8 +212,8 @@ Instances datasetPair = null;
 
 	@Override
 	public Classifier training(Instances dataset) {
-		System.out.println("IN TRAINING");
-		System.out.println(dataset);
+		//System.out.println("IN TRAINING");
+		//System.out.println(dataset);
 		try {
 			this.model.buildClassifier(dataset);
 		} catch (Exception e) {
@@ -226,9 +226,9 @@ Instances datasetPair = null;
 //		}
 		//System.out.println("Slope: " + this.model.getSlope());
         //System.out.println("Intercept: " + this.model.getIntercept());
-		for (double coefficient : this.model.coefficients()) {
-			System.out.println(coefficient);
-		}
+//		for (double coefficient : this.model.coefficients()) {
+//			System.out.println(coefficient);
+//		}
 		return this.model;
 	}
 
@@ -254,7 +254,7 @@ Instances datasetPair = null;
 		
 		for(Query q: queryDocs.keySet()){
 			String query = q.query;
-			System.out.println(query);
+			//System.out.println(query);
 			for(Document d: queryDocs.get(q)){
 				Map<String,Map<String, Double>> tfDoc = AScorer.getDocTermFreqs(d, q);
 				
@@ -299,57 +299,69 @@ Instances datasetPair = null;
 			}
 		}
 		
-		System.out.println(tf.features);
+		//System.out.println(tf.features);
 		/* Set last attribute as target */
 		dataset.setClassIndex(dataset.numAttributes() - 1);
 		Standardize filter = new Standardize();
 		filter.setInputFormat(dataset);
 		Instances new_dataset = Filter.useFilter(dataset, filter);
 		tf.StandardizeFeatures();
-		System.out.println(tf.features);
+		//System.out.println(tf.features);
 	
 	return tf;
 	}
 
 	@Override
 	public Map<String, List<String>> testing(TestFeatures tf,
-			Classifier model) {
+			final Classifier model) {
 		Map<String, List<String>> result = new HashMap<String, List<String>>();
-		/*
-		 * @TODO: Your code here
-		 */
-		// {query -> {doc -> index}}
+		
 		for(Map.Entry<String, Map<String, Integer>> entry : tf.index_map.entrySet()) {
-			//features.get(index_map.get(query).get(url));
 			String query = entry.getKey();
-			//System.out.println("query: "+query);
-			List<Pair<String,Double>> urlAndScores = new ArrayList<Pair<String,Double>>();
+			List<Pair<String,Instance>> urlAndScores = new ArrayList<Pair<String,Instance>>();
 			for(Map.Entry<String, Integer> doc : entry.getValue().entrySet()) {
 				String url = doc.getKey();
-				Instance instance = tf.getInstance(query, url);
-				double score = 0;
-				try {
-					score = model.classifyInstance(instance);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				//System.out.println("\turl: "+url+": "+score);
 				if(!result.containsKey(query)) {
 					result.put(query, new ArrayList<String>());
 				}
-				//result.get(query).add(url);
-				urlAndScores.add(new Pair<String,Double>(url,score));
+				urlAndScores.add(new Pair<String,Instance>(query,tf.getInstance(query, url)));
 				//TODO compute score and add to map
 			}
 			//sort urls for query based on scores
-			Collections.sort(urlAndScores, new Comparator<Pair<String,Double>>() {
+			Collections.sort(urlAndScores, new Comparator<Pair<String,Instance>>() {
 				@Override
-				public int compare(Pair<String, Double> o1, Pair<String, Double> o2) 
+				public int compare(Pair<String, Instance> o1, Pair<String, Instance> o2) 
 				{
-					return o2.getSecond().compareTo(o1.getSecond());
+					Instance prev = o1.getSecond();
+					Instance curr = o2.getSecond();
+					
+					String C = prev.value(5)>curr.value(5) ? "+1" : "-1";
+					double url = prev.value(0)-curr.value(0);
+					double title = prev.value(1)-curr.value(1);
+					double body = prev.value(2)-curr.value(2);
+					double header = prev.value(3)-curr.value(3);
+					double anchor = prev.value(4)-curr.value(4);
+					Instance merge = new DenseInstance(6);
+					merge.setDataset(prev.dataset());
+					merge.setValue(0, url);
+					merge.setValue(1, title);
+					merge.setValue(2, body);
+					merge.setValue(3, header);
+					merge.setValue(4, anchor);
+					merge.setValue(5, C);
+					double score = 0;
+					try {
+						score = model.classifyInstance(merge);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					return (int)score;
+					
 				}	
 			});
-			for (Pair<String,Double> urlAndScore : urlAndScores) {
+			
+			for (Pair<String,Instance> urlAndScore : urlAndScores) {
 					//System.out.println("\turl: "+urlAndScore.getFirst()+"\tscore: "+urlAndScore.getSecond());
 				result.get(query).add(urlAndScore.getFirst());
 				}
@@ -373,13 +385,13 @@ Instances datasetPair = null;
 		//System.out.println(data);
 		//System.out.println(model);
 		//System.out.println("Num of Param: " + model.numParameters());
-        System.out.println("Weights:");
+        //System.out.println("Weights:");
 //        for (double coefficient : model.coefficients()) {
 //			System.out.println(coefficient);
 //		}
-        for (double coefficient : learner.model.coefficients()) {
-			System.out.println(coefficient);
-		}
+//        for (double coefficient : learner.model.coefficients()) {
+//			System.out.println(coefficient);
+//		}
 		//classify the last instance
 		Instance myHouse = data.lastInstance();
 		double price = learner.model.classifyInstance(myHouse);

@@ -234,15 +234,9 @@ public class PointwiseLearner extends Learner {
 				merge.setValue(2, tfIdfBody);
 				merge.setValue(3, tfIdfHeader);
 				merge.setValue(4, tfIdfAnchor);
-				merge.setValue(5, "-1");
+				merge.setValue(5, relevanceScore);
 				tf.add(query,url,merge);
 			}
-		}
-		try {
-			tf.StandardizeFeatures();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		return tf;
 	}
@@ -258,7 +252,7 @@ public class PointwiseLearner extends Learner {
 		for(Map.Entry<String, Map<String, Integer>> entry : tf.index_map.entrySet()) {
 			//features.get(index_map.get(query).get(url));
 			String query = entry.getKey();
-			System.out.println("query: "+query);
+			//System.out.println("query: "+query);
 			List<Pair<String,Double>> urlAndScores = new ArrayList<Pair<String,Double>>();
 			for(Map.Entry<String, Integer> doc : entry.getValue().entrySet()) {
 				String url = doc.getKey();
@@ -286,7 +280,7 @@ public class PointwiseLearner extends Learner {
 				}	
 			});
 			for (Pair<String,Double> urlAndScore : urlAndScores) {
-					System.out.println("\turl: "+urlAndScore.getFirst()+"\tscore: "+urlAndScore.getSecond());
+				//	System.out.println("\turl: "+urlAndScore.getFirst()+"\tscore: "+urlAndScore.getSecond());
 				result.get(query).add(urlAndScore.getFirst());
 				}
 		}
