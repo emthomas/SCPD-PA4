@@ -143,7 +143,7 @@ public class Learning2Rank {
 	   // System.out.println(model);
 	    /* Output results */
 	    if(ranked_out_file.equals("")){ /* output to stdout */
-	      writeRankedResultsToFile(ranked_queries, System.out);
+	      //writeRankedResultsToFile(ranked_queries, System.out);
 	    } else { 						/* output to file */
 	      try {
 	        writeRankedResultsToFile(ranked_queries, new PrintStream(new FileOutputStream(ranked_out_file)));
