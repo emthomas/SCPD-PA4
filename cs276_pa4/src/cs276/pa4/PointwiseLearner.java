@@ -182,7 +182,7 @@ public class PointwiseLearner extends Learner {
 	@Override
 	public TestFeatures extract_test_features(String test_data_file,
 			Map<String, Double> idfs) {
-		TestFeatures tf = new TestFeatures();
+		TestFeatures tf = new TestFeatures("point");
 		
 		Map<Query,List<Document>> queryDocs = null;
 		try {
@@ -191,23 +191,11 @@ public class PointwiseLearner extends Learner {
 			e.printStackTrace();
 		}
 		
-		
-//		for(Query q: queryDocs.keySet()){
-//			System.out.println(q.query);
-//			for(Document d: queryDocs.get(q)){
-//				System.out.println("\t: "+d.url);
-//			}
-//		}
-		
 		for(Query q: queryDocs.keySet()){
 			String query = q.query;
-			//System.out.println("[REMOVE] Query = "+query);
-			
-			//Map<String,Double> tfQuery = AScorer.getQueryFreqs(q);
 			for(Document d: queryDocs.get(q)){
 				Map<String,Map<String, Double>> tfDoc = AScorer.getDocTermFreqs(d, q);
 				
-				//Map<String,Double> fieldWeight = new HashMap<String, Double>();
 				double tfIdfUrl = 0.0;
 				double tfIdfTitle = 0.0;
 				double tfIdfBody = 0.0;
@@ -235,7 +223,7 @@ public class PointwiseLearner extends Learner {
 				
 				//Getting Relevance Score
 				String url = d.url;
-				double[] instance = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+				double[] instance = new double[6];
 				
 				//double[] instance = {Math.random()*10, Math.random()*15, Math.random()*20, Math.random()*25, Math.random()*30, Math.random()*100};
 				 
@@ -245,9 +233,7 @@ public class PointwiseLearner extends Learner {
 				instance[3] = tfIdfHeader;
 				instance[4] = tfIdfAnchor;
 				instance[5] = relevanceScore;
-				//System.out.println("[REMOVE] "+Arrays.toString(instance));
 				Instance inst = new DenseInstance(1.0, instance);
-				//inst = new DenseInstance(1.0, instance); 
 				tf.add(query,url,inst);
 				
 			}

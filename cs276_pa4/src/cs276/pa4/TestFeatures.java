@@ -4,6 +4,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public class TestFeatures {
 	Map<String, Map<String, Integer>> index_map;
 	private int index;
 	
-	public TestFeatures() {
+	public TestFeatures(String type) {
 		/* Build attributes list */
 		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 		attributes.add(new Attribute("url_w"));
@@ -31,7 +32,12 @@ public class TestFeatures {
 		attributes.add(new Attribute("body_w"));
 		attributes.add(new Attribute("header_w"));
 		attributes.add(new Attribute("anchor_w"));
-		attributes.add(new Attribute("relevance_score"));
+		if(type.equals("point")) {
+			attributes.add(new Attribute("relevance_score"));
+		}
+		else if (type.equals("pair")) {
+			attributes.add(	new Attribute("class",Arrays.asList("+1","-1")));
+		}
 		this.features = new Instances("train_dataset", attributes, 0);
 		features.setClassIndex(features.numAttributes() - 1);
 		this.index_map = new HashMap<String, Map<String, Integer>>();
