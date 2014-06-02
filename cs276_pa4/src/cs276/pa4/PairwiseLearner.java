@@ -133,7 +133,7 @@ public class PairwiseLearner extends Learner {
 		//System.out.println(tf.features);
 		
 		
-Instances datasetPair = null;
+		Instances datasetPair = null;
 		
 		/* Build attributes list */
 		ArrayList<Attribute> attributesPair = new ArrayList<Attribute>();
@@ -194,8 +194,8 @@ Instances datasetPair = null;
 			}
 			
 		}
-		//System.out.println(datasetPair);
 		datasetPair.setClassIndex(datasetPair.numAttributes() - 1);
+		//System.out.println(datasetPair);
 		return datasetPair;
 	}
 	
@@ -230,23 +230,11 @@ Instances datasetPair = null;
 
 	@Override
 	public Classifier training(Instances dataset) {
-		//System.out.println("IN TRAINING");
-		//System.out.println(dataset);
 		try {
 			this.model.buildClassifier(dataset);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//		System.out.println("Num of Param: " + this.model.getWeights());
-//        System.out.println("Weights:");
-//        for (double coefficient : this.model.coefficients()) {
-//			System.out.println(coefficient);
-//		}
-		//System.out.println("Slope: " + this.model.getSlope());
-        //System.out.println("Intercept: " + this.model.getIntercept());
-//		for (double coefficient : this.model.coefficients()) {
-//			System.out.println(coefficient);
-//		}
 		return this.model;
 	}
 
@@ -282,7 +270,7 @@ Instances datasetPair = null;
 				double tfIdfBody = 0.0;
 				double tfIdfHeader = 0.0;
 				double tfIdfAnchor = 0.0;
-				double relevanceScore = 0.0;
+				double relevanceScore = 1.0;
 				
 				for(String term: q.words){
 					double qIDF = Util.IDF(term, idfs);
@@ -332,9 +320,11 @@ Instances datasetPair = null;
 	@Override
 	public Map<String, List<String>> testing(TestFeatures tf,
 			final Classifier model) {
+      
 		Map<String, List<String>> result = new HashMap<String, List<String>>();
 		
 		for(Map.Entry<String, Map<String, Integer>> entry : tf.index_map.entrySet()) {
+			//System.out.println(entry.getKey());
 			String query = entry.getKey();
 			List<Pair<String,Instance>> urlAndScores = new ArrayList<Pair<String,Instance>>();
 			for(Map.Entry<String, Integer> doc : entry.getValue().entrySet()) {
@@ -345,42 +335,61 @@ Instances datasetPair = null;
 				urlAndScores.add(new Pair<String,Instance>(url,tf.getInstance(query, url)));
 				//TODO compute score and add to map
 			}
+			
 			//sort urls for query based on scores
-			Collections.sort(urlAndScores, new Comparator<Pair<String,Instance>>() {
+			Collections.sort(urlAndScores, new Comparator <Pair<String,Instance>>() {
+				
 				@Override
 				public int compare(Pair<String, Instance> o1, Pair<String, Instance> o2) 
 				{
 					Instance prev = o1.getSecond();
 					Instance curr = o2.getSecond();
 					
-					String C = prev.value(5)>curr.value(5) ? "+1" : "-1";
+					//String C = prev.value(5)>curr.value(5) ? "+1" : "-1";
+					Instances dataset = null;
+					
+					/* Build attributes list */
+					ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+					attributes.add(new Attribute("url_w"));
+					attributes.add(new Attribute("title_w"));
+					attributes.add(new Attribute("body_w"));
+					attributes.add(new Attribute("header_w"));
+					attributes.add(new Attribute("anchor_w"));
+					attributes.add(new Attribute("class",Arrays.asList("-1","+1")));
+					dataset = new Instances("merge_dataset", attributes, 0);
+					
 					double url = prev.value(0)-curr.value(0);
 					double title = prev.value(1)-curr.value(1);
 					double body = prev.value(2)-curr.value(2);
 					double header = prev.value(3)-curr.value(3);
 					double anchor = prev.value(4)-curr.value(4);
 					Instance merge = new DenseInstance(6);
-					merge.setDataset(prev.dataset());
+					merge.setDataset(dataset);
 					merge.setValue(0, url);
 					merge.setValue(1, title);
 					merge.setValue(2, body);
 					merge.setValue(3, header);
 					merge.setValue(4, anchor);
-					merge.setValue(5, C);
+					//merge.setValue(5, "-1");
+					dataset.add(merge);
+					dataset.setClassIndex(dataset.numAttributes() - 1);
+					//System.out.println("before merged: "+merge);
 					double score = 0;
 					try {
-						score = model.classifyInstance(merge);
+						score = model.classifyInstance(dataset.get(0));
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					return (int)score;
+					//System.out.println(score>0.0);
+					//System.out.println("after merged: "+(score>0.0));
+					return (score>0.0)?-1:1;
 					
 				}	
 			});
 			
 			for (Pair<String,Instance> urlAndScore : urlAndScores) {
-				//System.out.println("\turl: "+urlAndScore.getFirst()+"\tscore: "+urlAndScore.getSecond());
+				//System.out.println("\turl: "+urlAndScore.getFirst());
 				result.get(query).add(urlAndScore.getFirst());
 				}
 		}
