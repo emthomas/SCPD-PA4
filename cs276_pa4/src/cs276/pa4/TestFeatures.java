@@ -2,6 +2,8 @@ package cs276.pa4;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Standardize;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,5 +59,12 @@ public class TestFeatures {
 	public Instance getInstance(String query, String url) {
 		return features.get(index_map.get(query).get(url));
 //		return features.get(0);
+	}
+	
+	public void StandardizeFeatures() throws Exception {
+		Standardize filter = new Standardize();
+		filter.setInputFormat(features);
+		Instances new_features = Filter.useFilter(features, filter);
+		features = new_features;
 	}
 }

@@ -54,7 +54,8 @@ public class PairwiseLearner extends Learner {
 	@Override
 	public Instances extract_train_features(String train_data_file,
 			String train_rel_file, Map<String, Double> idfs) throws Exception{
-
+		
+		TestFeatures tf = new TestFeatures("point");
 		Instances dataset = null;
 		
 		/* Build attributes list */
@@ -73,6 +74,7 @@ public class PairwiseLearner extends Learner {
 		
 		for(Query q: queryDocs.keySet()){
 			String query = q.query;
+			System.out.println(query);
 			for(Document d: queryDocs.get(q)){
 				Map<String,Map<String, Double>> tfDoc = AScorer.getDocTermFreqs(d, q);
 				
@@ -107,6 +109,7 @@ public class PairwiseLearner extends Learner {
 				Map<String, Double> urlRelScore = queryDocScore.get(q.query);
 				if(urlRelScore.containsKey(d.url)){
 					relevanceScore = urlRelScore.get(d.url);
+					System.out.println("\t"+url+": "+relevanceScore);
 				}
 				double[] instance = new double[6];
 				instance[0] = tfIdfUrl;
@@ -116,16 +119,18 @@ public class PairwiseLearner extends Learner {
 				instance[4] = tfIdfAnchor;
 				instance[5] = relevanceScore;
 				dataset.add(new DenseInstance(1.0, instance));
+				tf.add(query, url, new DenseInstance(1.0, instance));
 			}
 		}
 		
-		System.out.println(dataset);
+		System.out.println(tf.features);
 		/* Set last attribute as target */
 		dataset.setClassIndex(dataset.numAttributes() - 1);
 		Standardize filter = new Standardize();
 		filter.setInputFormat(dataset);
 		Instances new_dataset = Filter.useFilter(dataset, filter);
-		System.out.println(new_dataset);
+		tf.StandardizeFeatures();
+		System.out.println(tf.features);
 		
 		
 Instances datasetPair = null;
@@ -140,21 +145,16 @@ Instances datasetPair = null;
 		attributesPair.add(new Attribute("class",Arrays.asList("+1","-1")));
 		datasetPair = new Instances("train_dataset_pair", attributesPair, 0);
 		//System.out.println("start merge:");
-		int start=0;
-		int end=0;
+		
 		for(Query q: queryDocs.keySet()){
 			String query = q.query;
-			//System.out.println(query);
-			for(Document d: queryDocs.get(q)){
-				Instance prev = new DenseInstance(6);
-				Instance curr = new DenseInstance(6);
-				if(end==start) {
-					prev = (DenseInstance)new_dataset.get(end).copy();
-					curr = (DenseInstance)new_dataset.get(queryDocs.get(q).size()-1).copy();
-				} else {
-					prev = (DenseInstance)new_dataset.get(end-1).copy();
-					curr = (DenseInstance)new_dataset.get(end).copy();
-				}
+			//for(Document d: queryDocs.get(q)){
+			for(int i=1; i<queryDocs.get(q).size();i++) {
+				String prevUrl = queryDocs.get(q).get(i-1).url;
+				String currUrl = queryDocs.get(q).get(i).url;
+				Instance prev = tf.getInstance(query, prevUrl);
+				Instance curr = tf.getInstance(query, currUrl);
+				if(prev.value(5)!=curr.value(5)) {
 				String C = prev.value(5)>curr.value(5) ? "+1" : "-1";
 				double url = prev.value(0)-curr.value(0);
 				double title = prev.value(1)-curr.value(1);
@@ -170,55 +170,70 @@ Instances datasetPair = null;
 				merge.setValue(4, anchor);
 				merge.setValue(5, C);
 				datasetPair.add(merge);
-//				System.out.println("prev: "+prev);
-//				System.out.println("curr: "+curr);
-//				System.out.println("merg: "+merge);
-				//System.out.println(url+","+title+","+body+","+header+","+anchor+","+C);
-				//System.out.println("\t"+d.url+": "+new_dataset.get(end++).value(5));
-			end++;
+				}
 			}
-			start=end;
+			String prevUrl = queryDocs.get(q).get(0).url;
+			String currUrl = queryDocs.get(q).get(queryDocs.get(q).size()-1).url;
+			Instance prev = tf.getInstance(query, prevUrl);
+			Instance curr = tf.getInstance(query, currUrl);
+			if(prev.value(5)!=curr.value(5)) {
+			String C = prev.value(5)>curr.value(5) ? "+1" : "-1";
+			double url = prev.value(0)-curr.value(0);
+			double title = prev.value(1)-curr.value(1);
+			double body = prev.value(2)-curr.value(2);
+			double header = prev.value(3)-curr.value(3);
+			double anchor = prev.value(4)-curr.value(4);
+			Instance merge = new DenseInstance(6);
+			merge.setDataset(datasetPair);
+			merge.setValue(0, url);
+			merge.setValue(1, title);
+			merge.setValue(2, body);
+			merge.setValue(3, header);
+			merge.setValue(4, anchor);
+			merge.setValue(5, C);
+			datasetPair.add(merge);
+			}
 		}
-		//System.out.println(datasetPair);
+		System.out.println(datasetPair);
 		
-//		int i = new_dataset.size();
-//		for(int j=1; j<i; j++) {
-//			Instance prev = new_dataset.get(j-1);
-//			Instance curr = new_dataset.get(j);
-//			String C = prev.value(5)<curr.value(5) ? "+1" : "-1";
-//			double url = prev.value(0)-curr.value(0);
-//			double title = prev.value(1)-curr.value(1);
-//			double body = prev.value(2)-curr.value(2);
-//			double header = prev.value(3)-curr.value(3);
-//			double anchor = prev.value(4)-curr.value(4);
-//			Instance merge = new DenseInstance(6);
-//			merge.setDataset(datasetPair);
-//			merge.setValue(0, url);
-//			merge.setValue(1, title);
-//			merge.setValue(2, body);
-//			merge.setValue(3, header);
-//			merge.setValue(4, anchor);
-//			merge.setValue(5, C);
-//			datasetPair.add(merge);
+//		for(Query q: queryDocs.keySet()){
+//			String query = q.query;
+//			//System.out.println(query);
+//			for(Document d: queryDocs.get(q)){
+//				Instance prev = new DenseInstance(6);
+//				Instance curr = new DenseInstance(6);
+//				if(end==start) {
+//					prev = (DenseInstance)new_dataset.get(end).copy();
+//					curr = (DenseInstance)new_dataset.get(queryDocs.get(q).size()-1).copy();
+//				} else {
+//					prev = (DenseInstance)new_dataset.get(end-1).copy();
+//					curr = (DenseInstance)new_dataset.get(end).copy();
+//				}
+//				String C = prev.value(5)>curr.value(5) ? "+1" : "-1";
+//				double url = prev.value(0)-curr.value(0);
+//				double title = prev.value(1)-curr.value(1);
+//				double body = prev.value(2)-curr.value(2);
+//				double header = prev.value(3)-curr.value(3);
+//				double anchor = prev.value(4)-curr.value(4);
+//				Instance merge = new DenseInstance(6);
+//				merge.setDataset(datasetPair);
+//				merge.setValue(0, url);
+//				merge.setValue(1, title);
+//				merge.setValue(2, body);
+//				merge.setValue(3, header);
+//				merge.setValue(4, anchor);
+//				merge.setValue(5, C);
+//				datasetPair.add(merge);
+////				System.out.println("prev: "+prev);
+////				System.out.println("curr: "+curr);
+////				System.out.println("merg: "+merge);
+//				//System.out.println(url+","+title+","+body+","+header+","+anchor+","+C);
+//				//System.out.println("\t"+d.url+": "+new_dataset.get(end++).value(5));
+//			end++;
+//			}
+//			start=end;
 //		}
-//		Instance prev = new_dataset.firstInstance();
-//		Instance curr = new_dataset.lastInstance();
-//		String C = prev.value(5)<curr.value(5) ? "+1" : "-1";
-//		double url = prev.value(0)-curr.value(0);
-//		double title = prev.value(1)-curr.value(1);
-//		double body = prev.value(2)-curr.value(2);
-//		double header = prev.value(3)-curr.value(3);
-//		double anchor = prev.value(4)-curr.value(4);
-//		Instance merge = new DenseInstance(6);
-//		merge.setDataset(datasetPair);
-//		merge.setValue(0, url);
-//		merge.setValue(1, title);
-//		merge.setValue(2, body);
-//		merge.setValue(3, header);
-//		merge.setValue(4, anchor);
-//		merge.setValue(5, C);
-//		datasetPair.add(merge);
-//		//System.out.println(datasetPair);
+//		System.out.println(datasetPair);
 		
 		datasetPair.setClassIndex(datasetPair.numAttributes() - 1);
 		return datasetPair;
@@ -260,14 +275,15 @@ Instances datasetPair = null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		//System.out.println("Num of Param: " + this.model.numParameters());
+//		System.out.println("Num of Param: " + this.model.getWeights());
 //        System.out.println("Weights:");
 //        for (double coefficient : this.model.coefficients()) {
 //			System.out.println(coefficient);
 //		}
 		//System.out.println("Slope: " + this.model.getSlope());
         //System.out.println("Intercept: " + this.model.getIntercept());
-        //System.out.println(this.model);
+        System.out.println("Weights: " + this.model.getWeights());
+        System.out.println("model: "+this.model.getKernelType());
 		return this.model;
 	}
 
