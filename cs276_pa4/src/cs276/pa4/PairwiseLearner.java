@@ -151,28 +151,46 @@ Instances datasetPair = null;
 			//for(Document d: queryDocs.get(q)){
 			for(int i=0; i<queryDocs.get(q).size()-1;i++) {
 				for (int j = i+1; j<queryDocs.get(q).size(); j++) {
-				String prevUrl = queryDocs.get(q).get(i).url;
-				String currUrl = queryDocs.get(q).get(j).url;
-				Instance prev = tf.getInstance(query, prevUrl);
-				Instance curr = tf.getInstance(query, currUrl);
-				if(prev.value(5)!=curr.value(5)) {
-				String C = prev.value(5)>curr.value(5) ? "+1" : "-1";
-				double url = prev.value(0)-curr.value(0);
-				double title = prev.value(1)-curr.value(1);
-				double body = prev.value(2)-curr.value(2);
-				double header = prev.value(3)-curr.value(3);
-				double anchor = prev.value(4)-curr.value(4);
-				Instance merge = new DenseInstance(6);
-				merge.setDataset(datasetPair);
-				merge.setValue(0, url);
-				merge.setValue(1, title);
-				merge.setValue(2, body);
-				merge.setValue(3, header);
-				merge.setValue(4, anchor);
-				merge.setValue(5, C);
-				datasetPair.add(merge);
+					String prevUrl = queryDocs.get(q).get(i).url;
+					String currUrl = queryDocs.get(q).get(j).url;
+					Instance prev = tf.getInstance(query, prevUrl);
+					Instance curr = tf.getInstance(query, currUrl);
+					if(prev.value(5)!=curr.value(5)) {
+						String C = prev.value(5)>curr.value(5) ? "+1" : "-1";
+						double url = prev.value(0)-curr.value(0);
+						double title = prev.value(1)-curr.value(1);
+						double body = prev.value(2)-curr.value(2);
+						double header = prev.value(3)-curr.value(3);
+						double anchor = prev.value(4)-curr.value(4);
+						Instance merge = new DenseInstance(6);
+						merge.setDataset(datasetPair);
+						merge.setValue(0, url);
+						merge.setValue(1, title);
+						merge.setValue(2, body);
+						merge.setValue(3, header);
+						merge.setValue(4, anchor);
+						merge.setValue(5, C);
+						datasetPair.add(merge);
+						/*
+						//For Reverse feature Diff
+						String CR = prev.value(5) > curr.value(5) ? "-1" : "+1";
+						double urlR = curr.value(0)-prev.value(0);
+						double titleR = curr.value(1)-prev.value(1);
+						double bodyR = curr.value(2)-prev.value(2);
+						double headerR = curr.value(3)-prev.value(3);
+						double anchorR = curr.value(4)-prev.value(4);
+						Instance mergeR = new DenseInstance(6);
+						mergeR.setDataset(datasetPair);
+						mergeR.setValue(0, urlR);
+						mergeR.setValue(1, titleR);
+						mergeR.setValue(2, bodyR);
+						mergeR.setValue(3, headerR);
+						mergeR.setValue(4, anchorR);
+						mergeR.setValue(5, CR);
+						datasetPair.add(mergeR);
+						*/
+					}
 				}
-			}
 			}
 			
 		}
