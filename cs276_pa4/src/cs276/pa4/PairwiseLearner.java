@@ -54,98 +54,6 @@ public class PairwiseLearner extends Learner {
 	@Override
 	public Instances extract_train_features(String train_data_file,
 			String train_rel_file, Map<String, Double> idfs) throws Exception{
-//		/*
-//		 * @TODO: Your code here
-//		 */
-//		
-//		Instances dataset = null;
-//		
-//		/* Build attributes list */
-//		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
-//		attributes.add(new Attribute("url_w"));
-//		attributes.add(new Attribute("title_w"));
-//		attributes.add(new Attribute("body_w"));
-//		attributes.add(new Attribute("header_w"));
-//		attributes.add(new Attribute("anchor_w"));
-//		attributes.add(new Attribute("relevance_score",Arrays.asList("-1","1")));
-//		dataset = new Instances("train_dataset", attributes, 0);
-//		
-//		//Query -> <d1, d2,...>
-//		Map<Query,List<Document>> queryDocs = Util.loadTrainData(train_data_file);
-//		//Query -> <url, relevance score>
-//		Map<String, Map<String, Double>> queryDocScore = Util.loadRelData(train_rel_file);
-//		
-//		for(Query q: queryDocs.keySet()){
-//			//System.out.println("\n\nQuery = "+q.query);
-//			Map<String, Double> urlRelScore = queryDocScore.get(q.query);
-//			List<Document> docs = queryDocs.get(q);
-//			for(int i = 0; i < docs.size()-1; ++i){
-//				Document d1 = docs.get(i);
-//				//System.out.println("\tDoc1: "+docs.get(i).url);
-//				for(int j = i+1; j < docs.size(); ++j){
-//					Document d2 = docs.get(j);
-//					//System.out.println("\tDoc2: "+docs.get(j).url);
-//					
-//					Map<String,Map<String, Double>> tfDoc1 = AScorer.getDocTermFreqs(d1, q);
-//					double tfIdfUrlD1 = tfIDF(q,"url",tfDoc1,idfs);
-//					double tfIdfTitleD1 = tfIDF(q,"title",tfDoc1,idfs);
-//					double tfIdfBodyD1 = tfIDF(q,"body",tfDoc1,idfs);
-//					double tfIdfHeaderD1 = tfIDF(q,"header",tfDoc1,idfs);
-//					double tfIdfAnchorD1 = tfIDF(q,"anchor",tfDoc1,idfs);
-//					double relevanceScoreD1 = relevanceScore(urlRelScore,d1);
-//					
-//					//System.out.println("\t\t"+tfIdfUrlD1+", "+tfIdfTitleD1+", "+tfIdfBodyD1+", "+tfIdfHeaderD1+", "+tfIdfAnchorD1+"\t = "+relevanceScoreD1);
-//					
-//					Map<String,Map<String, Double>> tfDoc2 = AScorer.getDocTermFreqs(d2, q);
-//					double tfIdfUrlD2 = tfIDF(q,"url",tfDoc2,idfs);
-//					double tfIdfTitleD2 = tfIDF(q,"title",tfDoc2,idfs);
-//					double tfIdfBodyD2 = tfIDF(q,"body",tfDoc2,idfs);
-//					double tfIdfHeaderD2 = tfIDF(q,"header",tfDoc2,idfs);
-//					double tfIdfAnchorD2 = tfIDF(q,"anchor",tfDoc2,idfs);
-//					double relevanceScoreD2 = relevanceScore(urlRelScore,d2);
-//					
-//					//System.out.println("\t\t"+tfIdfUrlD2+", "+tfIdfTitleD2+", "+tfIdfBodyD2+", "+tfIdfHeaderD2+", "+tfIdfAnchorD2+"\t = "+relevanceScoreD2);
-//					
-//					double tfIdfUrl = tfIdfUrlD1 - tfIdfUrlD2;
-//					double tfIdfTitle = tfIdfTitleD1 - tfIdfTitleD2;
-//					double tfIdfBody = tfIdfBodyD1 - tfIdfBodyD2;
-//					double tfIdfHeader = tfIdfHeaderD1 -  tfIdfHeaderD2;
-//					double tfIdfAnchor = tfIdfAnchorD1 - tfIdfAnchorD2;
-//					double relevanceScore = 1;
-//					if(relevanceScoreD1 < relevanceScoreD2){
-//						relevanceScore = -1;
-//					}
-//					
-//					//System.out.println("\t\t"+tfIdfUrl+", "+tfIdfTitle+", "+tfIdfBody+", "+tfIdfHeader+", "+tfIdfAnchor+"\t = "+relevanceScore);
-//					
-////					double[] instance = new double[6];
-////					instance[0] = tfIdfUrl;
-////					instance[1] = tfIdfTitle;
-////					instance[2] = tfIdfBody;
-////					instance[3] = tfIdfHeader;
-////					instance[4] = tfIdfAnchor;
-////					instance[5] = relevanceScore;
-//					Instance instance = new DenseInstance(6);
-//					instance.setValue(0, tfIdfUrl);
-//					instance.setValue(1, tfIdfTitle);
-//					instance.setValue(2, tfIdfBody);
-//					instance.setValue(3, tfIdfHeader);
-//					instance.setValue(4, tfIdfAnchor);
-//					instance.setValue(5, relevanceScore);
-//					System.out.println(instance);
-//					dataset.add(instance);
-//				}
-//			}
-//		}
-//
-//		dataset.setClassIndex(dataset.numAttributes() - 1);
-//		Standardize filter = new Standardize();
-//		filter.setInputFormat(dataset);
-//		Instances new_dataset = Filter.useFilter(dataset, filter);
-//
-//		System.out.println(dataset.get(0));
-//		
-//		return new_dataset;
 
 		Instances dataset = null;
 		
@@ -167,6 +75,7 @@ public class PairwiseLearner extends Learner {
 			String query = q.query;
 			for(Document d: queryDocs.get(q)){
 				Map<String,Map<String, Double>> tfDoc = AScorer.getDocTermFreqs(d, q);
+				
 				
 				double tfIdfUrl = 0.0;
 				double tfIdfTitle = 0.0;
@@ -210,14 +119,16 @@ public class PairwiseLearner extends Learner {
 			}
 		}
 		
+		System.out.println(dataset);
 		/* Set last attribute as target */
 		dataset.setClassIndex(dataset.numAttributes() - 1);
 		Standardize filter = new Standardize();
 		filter.setInputFormat(dataset);
 		Instances new_dataset = Filter.useFilter(dataset, filter);
+		System.out.println(new_dataset);
 		
 		
-		Instances datasetPair = null;
+Instances datasetPair = null;
 		
 		/* Build attributes list */
 		ArrayList<Attribute> attributesPair = new ArrayList<Attribute>();
@@ -228,45 +139,86 @@ public class PairwiseLearner extends Learner {
 		attributesPair.add(new Attribute("anchor_w"));
 		attributesPair.add(new Attribute("class",Arrays.asList("+1","-1")));
 		datasetPair = new Instances("train_dataset_pair", attributesPair, 0);
-		
-		int i = new_dataset.size();
-		for(int j=1; j<i; j++) {
-			Instance prev = new_dataset.get(j-1);
-			Instance curr = new_dataset.get(j);
-			String C = prev.value(5)>curr.value(5) ? "+1" : "-1";
-			double url = prev.value(0)-curr.value(0);
-			double title = prev.value(1)-curr.value(1);
-			double body = prev.value(2)-curr.value(2);
-			double header = prev.value(3)-curr.value(3);
-			double anchor = prev.value(4)-curr.value(4);
-			Instance merge = new DenseInstance(6);
-			merge.setDataset(datasetPair);
-			merge.setValue(0, url);
-			merge.setValue(1, title);
-			merge.setValue(2, body);
-			merge.setValue(3, header);
-			merge.setValue(4, anchor);
-			merge.setValue(5, C);
-			datasetPair.add(merge);
+		//System.out.println("start merge:");
+		int start=0;
+		int end=0;
+		for(Query q: queryDocs.keySet()){
+			String query = q.query;
+			//System.out.println(query);
+			for(Document d: queryDocs.get(q)){
+				Instance prev = new DenseInstance(6);
+				Instance curr = new DenseInstance(6);
+				if(end==start) {
+					prev = (DenseInstance)new_dataset.get(end).copy();
+					curr = (DenseInstance)new_dataset.get(queryDocs.get(q).size()-1).copy();
+				} else {
+					prev = (DenseInstance)new_dataset.get(end-1).copy();
+					curr = (DenseInstance)new_dataset.get(end).copy();
+				}
+				String C = prev.value(5)>curr.value(5) ? "+1" : "-1";
+				double url = prev.value(0)-curr.value(0);
+				double title = prev.value(1)-curr.value(1);
+				double body = prev.value(2)-curr.value(2);
+				double header = prev.value(3)-curr.value(3);
+				double anchor = prev.value(4)-curr.value(4);
+				Instance merge = new DenseInstance(6);
+				merge.setDataset(datasetPair);
+				merge.setValue(0, url);
+				merge.setValue(1, title);
+				merge.setValue(2, body);
+				merge.setValue(3, header);
+				merge.setValue(4, anchor);
+				merge.setValue(5, C);
+				datasetPair.add(merge);
+//				System.out.println("prev: "+prev);
+//				System.out.println("curr: "+curr);
+//				System.out.println("merg: "+merge);
+				//System.out.println(url+","+title+","+body+","+header+","+anchor+","+C);
+				//System.out.println("\t"+d.url+": "+new_dataset.get(end++).value(5));
+			end++;
+			}
+			start=end;
 		}
-		Instance prev = new_dataset.firstInstance();
-		Instance curr = new_dataset.lastInstance();
-		String C = prev.value(5)>curr.value(5) ? "+1" : "-1";
-		double url = prev.value(0)-curr.value(0);
-		double title = prev.value(1)-curr.value(1);
-		double body = prev.value(2)-curr.value(2);
-		double header = prev.value(3)-curr.value(3);
-		double anchor = prev.value(4)-curr.value(4);
-		Instance merge = new DenseInstance(6);
-		merge.setDataset(datasetPair);
-		merge.setValue(0, url);
-		merge.setValue(1, title);
-		merge.setValue(2, body);
-		merge.setValue(3, header);
-		merge.setValue(4, anchor);
-		merge.setValue(5, C);
-		datasetPair.add(merge);
 		//System.out.println(datasetPair);
+		
+//		int i = new_dataset.size();
+//		for(int j=1; j<i; j++) {
+//			Instance prev = new_dataset.get(j-1);
+//			Instance curr = new_dataset.get(j);
+//			String C = prev.value(5)<curr.value(5) ? "+1" : "-1";
+//			double url = prev.value(0)-curr.value(0);
+//			double title = prev.value(1)-curr.value(1);
+//			double body = prev.value(2)-curr.value(2);
+//			double header = prev.value(3)-curr.value(3);
+//			double anchor = prev.value(4)-curr.value(4);
+//			Instance merge = new DenseInstance(6);
+//			merge.setDataset(datasetPair);
+//			merge.setValue(0, url);
+//			merge.setValue(1, title);
+//			merge.setValue(2, body);
+//			merge.setValue(3, header);
+//			merge.setValue(4, anchor);
+//			merge.setValue(5, C);
+//			datasetPair.add(merge);
+//		}
+//		Instance prev = new_dataset.firstInstance();
+//		Instance curr = new_dataset.lastInstance();
+//		String C = prev.value(5)<curr.value(5) ? "+1" : "-1";
+//		double url = prev.value(0)-curr.value(0);
+//		double title = prev.value(1)-curr.value(1);
+//		double body = prev.value(2)-curr.value(2);
+//		double header = prev.value(3)-curr.value(3);
+//		double anchor = prev.value(4)-curr.value(4);
+//		Instance merge = new DenseInstance(6);
+//		merge.setDataset(datasetPair);
+//		merge.setValue(0, url);
+//		merge.setValue(1, title);
+//		merge.setValue(2, body);
+//		merge.setValue(3, header);
+//		merge.setValue(4, anchor);
+//		merge.setValue(5, C);
+//		datasetPair.add(merge);
+//		//System.out.println(datasetPair);
 		
 		datasetPair.setClassIndex(datasetPair.numAttributes() - 1);
 		return datasetPair;
@@ -401,7 +353,7 @@ public class PairwiseLearner extends Learner {
 		for(Map.Entry<String, Map<String, Integer>> entry : tf.index_map.entrySet()) {
 			//features.get(index_map.get(query).get(url));
 			String query = entry.getKey();
-			System.out.println("query: "+query);
+			//System.out.println("query: "+query);
 			List<Pair<String,Double>> urlAndScores = new ArrayList<Pair<String,Double>>();
 			for(Map.Entry<String, Integer> doc : entry.getValue().entrySet()) {
 				String url = doc.getKey();
@@ -429,7 +381,7 @@ public class PairwiseLearner extends Learner {
 				}	
 			});
 			for (Pair<String,Double> urlAndScore : urlAndScores) {
-					System.out.println("\turl: "+urlAndScore.getFirst()+"\tscore: "+urlAndScore.getSecond());
+					//System.out.println("\turl: "+urlAndScore.getFirst()+"\tscore: "+urlAndScore.getSecond());
 				result.get(query).add(urlAndScore.getFirst());
 				}
 		}
