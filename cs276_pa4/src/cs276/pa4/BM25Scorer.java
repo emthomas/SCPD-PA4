@@ -18,29 +18,6 @@ public class BM25Scorer {
 		this.calcAverageLengths();
 	}
 	
-	public void setParameters(String[] args) 
-	{
-		urlweight = Double.parseDouble(args[2]);
-	    titleweight  = Double.parseDouble(args[3]);
-	    bodyweight = Double.parseDouble(args[4]);
-	    headerweight = Double.parseDouble(args[5]);
-	    anchorweight = Double.parseDouble(args[6]);
-	    double[] fieldsweight = {urlweight,titleweight,bodyweight,headerweight,anchorweight};
-	    this.fieldsweight = fieldsweight;
-	    ///////bm25 specific weights///////////////
-	  //String[] TFTYPES = {"url","title","body","header","anchor"};
-	    burl=Double.parseDouble(args[7]);
-	    btitle=Double.parseDouble(args[8]);
-	    bheader=Double.parseDouble(args[9]);
-	    bbody=Double.parseDouble(args[10]);
-	    banchor=Double.parseDouble(args[11]);
-	    double[] bfields = {burl,btitle,bbody,bheader,banchor};
-	    this.bfields = bfields;
-
-	    k1=Double.parseDouble(args[12]);
-	    pageRankLambda=Double.parseDouble(args[13]);
-	    pageRankLambdaPrime=Double.parseDouble(args[14]);
-	}
 	
 	///////////////weights///////////////////////////
     double urlweight = 10;
