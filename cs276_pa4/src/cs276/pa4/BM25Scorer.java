@@ -129,7 +129,7 @@ public class BM25Scorer {
     ////////////////////////////////////
     
     
-	public double getNetScore(Map<String,Map<String, Double>> tfs, Query q, Map<String,Double> tfQuery,Document d)
+	public double getNetScore(Map<String,Map<String, Double>> tfs, Query q, Map<String,Double> tfQuery,Document d, Map<String, Double> dfs)
 	{
 		double score = 0.0;
 		double wdt = 0.0;
@@ -155,11 +155,12 @@ public class BM25Scorer {
 			double wt = 0;
 			double pRank = 0;
 			try {
-			idft = this.idfs.get(term);
-			wt = entry.getValue();
-			pRank = this.pagerankScores.get(d);
+				//idft = this.idfs.get(term);
+				idft = Util.IDF(term, dfs);
+				wt = entry.getValue();
+				pRank = this.pagerankScores.get(d);
 			} catch (Exception e) {
-				
+				e.printStackTrace();
 			}
 			//score += (wt/(this.k1+wt))*idft + this.pageRankLambda*(Math.log10(this.pageRankLambdaPrime+pRank));
 			score += (wt/(this.k1+wt))*idft + this.pageRankLambda*(pRank/(this.pageRankLambdaPrime+pRank));
@@ -208,7 +209,7 @@ public class BM25Scorer {
 	}
 
 	
-	public double getSimScore(Document d, Query q) 
+	public double getSimScore(Document d, Query q,  Map<String, Double> dfs) 
 	{
 		
 		Map<String,Map<String, Double>> tfs = AScorer.getDocTermFreqs(d,q);
@@ -217,7 +218,7 @@ public class BM25Scorer {
 		
 		Map<String,Double> tfQuery = AScorer.getQueryFreqs(q);
 		
-        return getNetScore(tfs,q,tfQuery,d);
+        return getNetScore(tfs,q,tfQuery,d, dfs);
 	}
 
 
