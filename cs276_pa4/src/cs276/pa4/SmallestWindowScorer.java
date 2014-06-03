@@ -39,16 +39,23 @@ public class SmallestWindowScorer extends BM25Scorer{
 	}
 	
 	public double getBoost(Document d, Query q) {
-		boostmod = smallestWindowDict.get(d).get(q)/Integer.MAX_VALUE;
-		double window = smallestWindowDict.get(d).get(q);
-		if(window==Integer.MAX_VALUE) {
+		double window = 0;
+		try {
+			window = smallestWindowDict.get(d).get(q);
+			boostmod = smallestWindowDict.get(d).get(q)/Integer.MAX_VALUE;
+			if(window==Integer.MAX_VALUE) {
+				boostmod = 1;
+			}
+			else if(window==q.getUniqueTermsCount()) {
+				boostmod = B;
+			}
+			else {
+				boostmod=B*Math.pow(Math.E,-window);
+			}
+		}
+		catch (Exception E) {
+			window = 1;
 			boostmod = 1;
-		}
-		else if(window==q.getUniqueTermsCount()) {
-			boostmod = B;
-		}
-		else {
-			boostmod=B*Math.pow(Math.E,-window);
 		}
 		
 		return boostmod;

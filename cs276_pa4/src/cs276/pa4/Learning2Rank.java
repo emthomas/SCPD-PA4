@@ -43,7 +43,7 @@ public class Learning2Rank {
 			boolean useSmallestWindow = false;
 			boolean usePageRank = false;
 			System.err.println("Task 3");
-			learner = new PairwiseLearner(isLinearKernel, useBM25, useSmallestWindow, usePageRank, train_data_file);
+			learner = new PairwisePlusLearner(isLinearKernel);
 			
 			
 			
@@ -61,7 +61,7 @@ public class Learning2Rank {
 		//System.out.println(data);
 		/* Step (2): implement your learning algorithm here */
 		model = learner.training(data);
-		//System.out.println(model);
+	    //System.out.println(model);
 	 		
 	    return model;
 	  }
@@ -81,6 +81,8 @@ public class Learning2Rank {
 				 * @TODO: Your code here, add more features 
 				 * */
 				System.err.println("Task 3");
+				boolean isLinearKernel = true;
+				learner = new PairwisePlusLearner(isLinearKernel);
 				
 			} else if (task == 4) {
 				

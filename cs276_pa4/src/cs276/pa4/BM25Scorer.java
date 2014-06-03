@@ -126,7 +126,7 @@ public class BM25Scorer {
 		}
 		
 		for(Map.Entry<String, Double> entry : tfQuery.entrySet()) {
-			System.out.println(entry.getKey()+":"+entry.getValue());
+			//System.out.println(entry.getKey()+":"+entry.getValue());
 			String term = entry.getKey();
 			double idft = 0;
 			double wt = 0;
@@ -134,17 +134,19 @@ public class BM25Scorer {
 			try {
 				//idft = this.idfs.get(term);
 				idft = Util.IDF(term, dfs);
-				System.out.println("IDFt = "+idft);
-				System.out.println("url = "+d.url);
+				//System.out.println("IDFt = "+idft);
+				//System.out.println("url = "+d.url);
 				wt = entry.getValue();
 				if(this.pagerankScores == null){
 					System.out.println("pagerank scores are null");
 				}
-				System.out.println("IDFt = "+idft);
+				//System.out.println("IDFt = "+idft);
+
+				//System.out.println("IDFt = "+this.pagerankScores);
 				pRank = this.pagerankScores.get(d);
-				System.out.println("IDFt = "+idft);
+				//System.out.println("IDFt = "+idft);
 			} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			//score += (wt/(this.k1+wt))*idft + this.pageRankLambda*(Math.log10(this.pageRankLambdaPrime+pRank));
 			score += (wt/(this.k1+wt))*idft + this.pageRankLambda*(pRank/(this.pageRankLambdaPrime+pRank));

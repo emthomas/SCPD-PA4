@@ -1,6 +1,7 @@
 package cs276.pa4;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import cs276.pa4.Document;
+import cs276.pa4.Query;
 import edu.stanford.cs276.util.Pair;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.LibSVM;
@@ -55,7 +58,7 @@ public class PairwisePlusLearner extends Learner {
 	public Instances extract_train_features(String train_data_file,
 			String train_rel_file, Map<String, Double> idfs) throws Exception{
 		
-		TestFeatures tf = new TestFeatures("point");
+		TestFeatures tf = new TestFeatures("plusPoint");
 		Instances dataset = null;
 		
 		/* Build attributes list */
@@ -74,6 +77,9 @@ public class PairwisePlusLearner extends Learner {
 		/* Add data */
 		Map<Query,List<Document>> queryDocs = Util.loadTrainData(train_data_file);
 		Map<String, Map<String, Double>> queryDocScore = Util.loadRelData(train_rel_file);
+		Map<Query,Map<String, Document>> queryDocsBm25 = loadTrainData(train_data_file);
+		BM25Scorer bm25Scorer = new BM25Scorer(queryDocsBm25);
+		SmallestWindowScorer windowScorer = new SmallestWindowScorer(idfs, queryDocsBm25);
 		
 		for(Query q: queryDocs.keySet()){
 			String query = q.query;
@@ -88,6 +94,9 @@ public class PairwisePlusLearner extends Learner {
 				double tfIdfHeader = 0.0;
 				double tfIdfAnchor = 0.0;
 				double relevanceScore = 0.0;
+				double bm25 = bm25Scorer.getSimScore(d, q, idfs);
+				double pagerank = d.page_rank;
+				double smallwindow = windowScorer.getSimScore(d, q, idfs);
 				
 				for(String term: q.words){
 					double qIDF = Util.IDF(term, idfs);
@@ -114,13 +123,16 @@ public class PairwisePlusLearner extends Learner {
 					relevanceScore = urlRelScore.get(d.url);
 				//	System.out.println("\t"+url+": "+relevanceScore);
 				}
-				double[] instance = new double[6];
+				double[] instance = new double[9];
 				instance[0] = tfIdfUrl;
 				instance[1] = tfIdfTitle;
 				instance[2] = tfIdfBody;
 				instance[3] = tfIdfHeader;
 				instance[4] = tfIdfAnchor;
-				instance[5] = relevanceScore;
+				instance[5] = bm25;
+				instance[6] = pagerank;
+				instance[7] = smallwindow;
+				instance[8] = relevanceScore;
 				dataset.add(new DenseInstance(1.0, instance));
 				tf.add(query, url, new DenseInstance(1.0, instance));
 			}
@@ -145,6 +157,9 @@ public class PairwisePlusLearner extends Learner {
 		attributesPair.add(new Attribute("body_w"));
 		attributesPair.add(new Attribute("header_w"));
 		attributesPair.add(new Attribute("anchor_w"));
+		attributesPair.add(new Attribute("bm25"));
+		attributesPair.add(new Attribute("pagerank"));
+		attributesPair.add(new Attribute("smallestwindow"));
 		attributesPair.add(new Attribute("class",Arrays.asList("-1","+1")));
 		datasetPair = new Instances("train_dataset_pair", attributesPair, 0);
 		//System.out.println("start merge:");
@@ -158,21 +173,27 @@ public class PairwisePlusLearner extends Learner {
 					String currUrl = queryDocs.get(q).get(j).url;
 					Instance prev = tf.getInstance(query, prevUrl);
 					Instance curr = tf.getInstance(query, currUrl);
-					if(prev.value(5)!=curr.value(5)) {
-						String C = prev.value(5)>curr.value(5) ? "+1" : "-1";
+					if(prev.value(8)!=curr.value(8)) {
+						String C = prev.value(8)>curr.value(8) ? "+1" : "-1";
 						double url = prev.value(0)-curr.value(0);
 						double title = prev.value(1)-curr.value(1);
 						double body = prev.value(2)-curr.value(2);
 						double header = prev.value(3)-curr.value(3);
 						double anchor = prev.value(4)-curr.value(4);
-						Instance merge = new DenseInstance(6);
+						double bm25 = prev.value(5)-curr.value(5);
+						double pageRank = prev.value(6)-curr.value(6);
+						double window = prev.value(7)-curr.value(7);
+						Instance merge = new DenseInstance(9);
 						merge.setDataset(datasetPair);
 						merge.setValue(0, url);
 						merge.setValue(1, title);
 						merge.setValue(2, body);
 						merge.setValue(3, header);
 						merge.setValue(4, anchor);
-						merge.setValue(5, C);
+						merge.setValue(5, bm25);
+						merge.setValue(6, pageRank);
+						merge.setValue(7, window);
+						merge.setValue(8, C);
 						datasetPair.add(merge);
 						/*
 						//For Reverse feature Diff
@@ -222,6 +243,86 @@ public class PairwisePlusLearner extends Learner {
 		return relevanceScore;
 	}
 	
+	public static Map<Query,Map<String, Document>> loadTrainData(String feature_file_name) throws Exception {
+		File feature_file = new File(feature_file_name);
+		if (!feature_file.exists() ) {
+			System.err.println("Invalid feature file name: " + feature_file_name);
+			return null;
+		}
+		
+		BufferedReader reader = new BufferedReader(new FileReader(feature_file));
+		String line = null, url= null, anchor_text = null;
+		Query query = null;
+		
+		/* feature dictionary: Query -> (url -> Document)  */
+		Map<Query,Map<String, Document>> queryDict =  new HashMap<Query,Map<String, Document>>();
+		
+		while ((line = reader.readLine()) != null && !line.isEmpty()) 
+		{
+			//System.out.println("[DEBUG] line = "+line);
+			String[] tokens = line.split(":", 2);
+			String key = tokens[0].trim();
+			String value = tokens[1].trim();
+
+			if (key.equals("query"))
+			{
+				query = new Query(value);
+				queryDict.put(query, new HashMap<String, Document>());
+			} 
+			else if (key.equals("url")) 
+			{
+				url = value;
+				queryDict.get(query).put(url, new Document(url));
+			} 
+			else if (key.equals("title")) 
+			{
+				queryDict.get(query).get(url).title = new String(value);
+			}
+			else if (key.equals("header"))
+			{
+				if (queryDict.get(query).get(url).headers == null)
+					queryDict.get(query).get(url).headers =  new ArrayList<String>();
+				queryDict.get(query).get(url).headers.add(value);
+			}
+			else if (key.equals("body_hits")) 
+			{
+				if (queryDict.get(query).get(url).body_hits == null)
+					queryDict.get(query).get(url).body_hits = new HashMap<String, List<Integer>>();
+				String[] temp = value.split(" ", 2);
+				String term = temp[0].trim();
+				List<Integer> positions_int;
+				
+				if (!queryDict.get(query).get(url).body_hits.containsKey(term))
+				{
+					positions_int = new ArrayList<Integer>();
+					queryDict.get(query).get(url).body_hits.put(term, positions_int);
+				} else
+					positions_int = queryDict.get(query).get(url).body_hits.get(term);
+				
+				String[] positions = temp[1].trim().split(" ");
+				for (String position : positions)
+					positions_int.add(Integer.parseInt(position));
+				
+			} 
+			else if (key.equals("body_length"))
+				queryDict.get(query).get(url).body_length = Integer.parseInt(value);
+			else if (key.equals("pagerank"))
+				queryDict.get(query).get(url).page_rank = Integer.parseInt(value);
+			else if (key.equals("anchor_text"))
+			{
+				anchor_text = value;
+				if (queryDict.get(query).get(url).anchors == null)
+					queryDict.get(query).get(url).anchors = new HashMap<String, Integer>();
+			}
+			else if (key.equals("stanford_anchor_count"))
+				queryDict.get(query).get(url).anchors.put(anchor_text, Integer.parseInt(value));      
+		}
+
+		reader.close();
+		
+		return queryDict;
+	}
+	
 	private static double getDocFieldTF(String term, String type, Map<String, Map<String, Double>> tfDoc){
 		Map<String, Double> m = tfDoc.get(type);
 		if(m != null && m.containsKey(term)){
@@ -245,7 +346,7 @@ public class PairwisePlusLearner extends Learner {
 	public TestFeatures extract_test_features(String test_data_file,
 			Map<String, Double> idfs) throws Exception {
 	
-		TestFeatures tf = new TestFeatures("pair");
+		TestFeatures tf = new TestFeatures("plusPair");
 		Instances dataset = null;
 		
 		/* Build attributes list */
@@ -255,11 +356,17 @@ public class PairwisePlusLearner extends Learner {
 		attributes.add(new Attribute("body_w"));
 		attributes.add(new Attribute("header_w"));
 		attributes.add(new Attribute("anchor_w"));
+		attributes.add(new Attribute("bm25"));
+		attributes.add(new Attribute("pagerank"));
+		attributes.add(new Attribute("smallestwindow"));
 		attributes.add(new Attribute("class",Arrays.asList("-1","+1")));
 		dataset = new Instances("test_dataset", attributes, 0);
 		
 		/* Add data */
 		Map<Query,List<Document>> queryDocs = Util.loadTrainData(test_data_file);
+		Map<Query,Map<String, Document>> queryDocsBm25 = loadTrainData(test_data_file);
+		BM25Scorer bm25Scorer = new BM25Scorer(queryDocsBm25);
+		SmallestWindowScorer windowScorer = new SmallestWindowScorer(idfs, queryDocsBm25);
 		
 		for(Query q: queryDocs.keySet()){
 			String query = q.query;
@@ -273,7 +380,10 @@ public class PairwisePlusLearner extends Learner {
 				double tfIdfBody = 0.0;
 				double tfIdfHeader = 0.0;
 				double tfIdfAnchor = 0.0;
-				double relevanceScore = 1.0;
+				double relevanceScore = 0.0;
+				double bm25 = bm25Scorer.getSimScore(d, q, idfs);
+				double pagerank = d.page_rank;
+				double smallwindow = windowScorer.getSimScore(d, q, idfs);
 				
 				for(String term: q.words){
 					double qIDF = Util.IDF(term, idfs);
@@ -296,13 +406,16 @@ public class PairwisePlusLearner extends Learner {
 				//Getting Relevance Score
 				String url = d.url;
 	
-				double[] instance = new double[6];
+				double[] instance = new double[9];
 				instance[0] = tfIdfUrl;
 				instance[1] = tfIdfTitle;
 				instance[2] = tfIdfBody;
 				instance[3] = tfIdfHeader;
 				instance[4] = tfIdfAnchor;
-				instance[5] = relevanceScore;
+				instance[5] = bm25;
+				instance[6] = pagerank;
+				instance[7] = smallwindow;
+				instance[8] = relevanceScore;
 				dataset.add(new DenseInstance(1.0, instance));
 				tf.add(query, url, new DenseInstance(1.0, instance));
 			}
@@ -358,6 +471,9 @@ public class PairwisePlusLearner extends Learner {
 					attributes.add(new Attribute("body_w"));
 					attributes.add(new Attribute("header_w"));
 					attributes.add(new Attribute("anchor_w"));
+					attributes.add(new Attribute("bm25"));
+					attributes.add(new Attribute("pagerank"));
+					attributes.add(new Attribute("smallestwindow"));
 					attributes.add(new Attribute("class",Arrays.asList("-1","+1")));
 					dataset = new Instances("merge_dataset", attributes, 0);
 					
@@ -366,14 +482,19 @@ public class PairwisePlusLearner extends Learner {
 					double body = prev.value(2)-curr.value(2);
 					double header = prev.value(3)-curr.value(3);
 					double anchor = prev.value(4)-curr.value(4);
-					Instance merge = new DenseInstance(6);
+					double bm25 = prev.value(5)-curr.value(4);
+					double pageRank = prev.value(6)-curr.value(4);
+					double window = prev.value(7)-curr.value(4);
+					Instance merge = new DenseInstance(9);
 					merge.setDataset(dataset);
 					merge.setValue(0, url);
 					merge.setValue(1, title);
 					merge.setValue(2, body);
 					merge.setValue(3, header);
 					merge.setValue(4, anchor);
-					//merge.setValue(5, "-1");
+					merge.setValue(5, bm25);
+					merge.setValue(6, pageRank);
+					merge.setValue(7, window);
 					dataset.add(merge);
 					dataset.setClassIndex(dataset.numAttributes() - 1);
 					//System.out.println("before merged: "+merge);

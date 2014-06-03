@@ -40,6 +40,18 @@ public class TestFeatures {
 		else if (type.equals("pair")) {
 			attributes.add(	new Attribute("class",Arrays.asList("+1","-1")));
 		}
+		else if (type.equals("plusPoint")) {
+			attributes.add(new Attribute("bm25"));
+			attributes.add(new Attribute("pagerank"));
+			attributes.add(new Attribute("smallestwindow"));
+			attributes.add(new Attribute("relevance_score"));
+		}
+		else if (type.equals("plusPair")) {
+			attributes.add(new Attribute("bm25"));
+			attributes.add(new Attribute("pagerank"));
+			attributes.add(new Attribute("smallestwindow"));
+			attributes.add(	new Attribute("class",Arrays.asList("+1","-1")));
+		}
 		this.features = new Instances("train_dataset", attributes, 0);
 		features.setClassIndex(features.numAttributes() - 1);
 		this.index_map = new HashMap<String, Map<String, Integer>>();
