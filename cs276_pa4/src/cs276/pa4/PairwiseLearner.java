@@ -24,7 +24,7 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Standardize;
 
 public class PairwiseLearner extends Learner {
-	  private LibSVM model;
+private LibSVM model;
 	  public PairwiseLearner(boolean isLinearKernel){
 	    try{
 	      model = new LibSVM();

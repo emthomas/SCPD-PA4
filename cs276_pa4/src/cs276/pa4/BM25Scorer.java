@@ -6,14 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cs276.pa4.Document;
+import cs276.pa4.Query;
 
-public class BM25Scorer {
+
+public class BM25Scorer extends AScorer {
 	Map<Query,Map<String, Document>> queryDict;
 	String[] TFTYPES = {"url","title","body","header","anchor"};
 	
 	public BM25Scorer(Map<Query,Map<String, Document>> queryDict)
 	{
-		//super(idfs);
+		super(idfs);
 		this.queryDict = queryDict;
 		this.calcAverageLengths();
 	}
@@ -45,8 +48,8 @@ public class BM25Scorer {
     
     Map<Document,Map<String,Double>> lengths;
     Map<String,Double> avgLengths;
-    Map<Document,Double> pagerankScores;
-    
+    //Map<Document,Double> pagerankScores;
+    Map<String,Double> pagerankScores;
     //////////////////////////////////////////
     
     //sets up average lengths for bm25, also handles pagerank
@@ -54,7 +57,8 @@ public class BM25Scorer {
     {
     	lengths = new HashMap<Document,Map<String,Double>>();
     	avgLengths = new HashMap<String,Double>();
-    	pagerankScores = new HashMap<Document,Double>();
+    	//pagerankScores = new HashMap<Document,Double>();
+    	pagerankScores = new HashMap<String,Double>();
     	
     	//loop over the queries
     	for(Query q : this.queryDict.keySet()) {
@@ -71,8 +75,11 @@ public class BM25Scorer {
     	}
     	
     	for(Document doc : lengths.keySet()) {
-    		pagerankScores.put(doc,(double)doc.page_rank);
-    		//System.out.println(doc);
+    		//pagerankScores.put(doc,(double)doc.page_rank);
+    		pagerankScores.put(doc.url,(double)doc.page_rank);
+    		//System.out.println("Adding PageRank for:");
+    		//System.out.println("\tURL: "+doc.url);
+    		//System.out.println("\tdoc.page_rank: "+(double)doc.page_rank);
     		for(Map.Entry<String, Double> entry : lengths.get(doc).entrySet()) {
     			//System.out.println("\t"+entry.getKey()+": "+entry.getValue());
     			String type = entry.getKey();
@@ -106,7 +113,7 @@ public class BM25Scorer {
     ////////////////////////////////////
     
     
-	public double getNetScore(Map<String,Map<String, Double>> tfs, Query q, Map<String,Double> tfQuery,Document d, Map<String, Double> dfs)
+	public double getNetScore(Map<String,Map<String, Double>> tfs, Query q, Map<String,Double> tfQuery,Document d)
 	{
 		double score = 0.0;
 		double wdt = 0.0;
@@ -132,21 +139,11 @@ public class BM25Scorer {
 			double wt = 0;
 			double pRank = 0;
 			try {
-				//idft = this.idfs.get(term);
-				idft = Util.IDF(term, dfs);
-				//System.out.println("IDFt = "+idft);
-				//System.out.println("url = "+d.url);
-				wt = entry.getValue();
-				if(this.pagerankScores == null){
-					System.out.println("pagerank scores are null");
-				}
-				//System.out.println("IDFt = "+idft);
-
-				//System.out.println("IDFt = "+this.pagerankScores);
-				pRank = this.pagerankScores.get(d);
-				//System.out.println("IDFt = "+idft);
+			idft = this.idfs.get(term);
+			wt = entry.getValue();
+			pRank = this.pagerankScores.get(d);
 			} catch (Exception e) {
-				//e.printStackTrace();
+				
 			}
 			//score += (wt/(this.k1+wt))*idft + this.pageRankLambda*(Math.log10(this.pageRankLambdaPrime+pRank));
 			score += (wt/(this.k1+wt))*idft + this.pageRankLambda*(pRank/(this.pageRankLambdaPrime+pRank));
@@ -204,7 +201,7 @@ public class BM25Scorer {
 		
 		Map<String,Double> tfQuery = AScorer.getQueryFreqs(q);
 		
-        return getNetScore(tfs,q,tfQuery,d, dfs);
+        return getNetScore(tfs,q,tfQuery,d);
 	}
 
 

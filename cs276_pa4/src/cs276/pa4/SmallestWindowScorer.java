@@ -68,7 +68,7 @@ public class SmallestWindowScorer extends BM25Scorer{
 		
 		Map<String,Double> tfQuery = AScorer.getQueryFreqs(q);
 		
-		return getNetScore(tfs,q,tfQuery,d,dfs)*getBoost(d,q);
+		return getNetScore(tfs,q,tfQuery,d)*getBoost(d,q);
 	}
 
 }
