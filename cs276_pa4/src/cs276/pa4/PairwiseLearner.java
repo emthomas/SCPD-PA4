@@ -24,7 +24,6 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Standardize;
 
 public class PairwiseLearner extends Learner {
-<<<<<<< HEAD
 	  private LibSVM model;
 	  public PairwiseLearner(boolean isLinearKernel){
 	    try{
@@ -80,81 +79,6 @@ public class PairwiseLearner extends Learner {
 				//System.out.println(query);
 				for(Document d: queryDocs.get(q)){
 					Map<String,Map<String, Double>> tfDoc = AScorer.getDocTermFreqs(d, q);
-=======
-  private LibSVM model;
-  
-  public PairwiseLearner(boolean isLinearKernel){
-    try{
-      model = new LibSVM();
-    } catch (Exception e){
-      e.printStackTrace();
-    }
-    
-    if(isLinearKernel){
-      model.setKernelType(new SelectedTag(LibSVM.KERNELTYPE_LINEAR, LibSVM.TAGS_KERNELTYPE));
-    }
-  }
-    
-  public PairwiseLearner(double C, double gamma, boolean isLinearKernel){
-    try{
-      model = new LibSVM();
-    } catch (Exception e){
-      e.printStackTrace();
-    }
-    
-    model.setCost(C);
-    model.setGamma(gamma); // only matter for RBF kernel
-    if(isLinearKernel){
-      model.setKernelType(new SelectedTag(LibSVM.KERNELTYPE_LINEAR, LibSVM.TAGS_KERNELTYPE));
-    }
-  }
-  
-	@Override
-	public Instances extract_train_features(String train_data_file,
-			String train_rel_file, Map<String, Double> idfs) throws Exception{
-		
-		
-		double bm25Score = 0.0;
-		double sqScore = 0.0;
-		double pageRank = 0.0;
-		
-		TestFeatures tf = new TestFeatures("point");
-		Instances dataset = null;
-		
-		/* Build attributes list */
-		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
-		attributes.add(new Attribute("url_w"));
-		attributes.add(new Attribute("title_w"));
-		attributes.add(new Attribute("body_w"));
-		attributes.add(new Attribute("header_w"));
-		attributes.add(new Attribute("anchor_w"));
-		attributes.add(new Attribute("relevance_score"));
-		dataset = new Instances("train_dataset", attributes, 0);
-		
-		/* Add data */
-		Map<Query,List<Document>> queryDocs = Util.loadTrainData(train_data_file);
-		Map<String, Map<String, Double>> queryDocScore = Util.loadRelData(train_rel_file);
-		
-		for(Query q: queryDocs.keySet()){
-			String query = q.query;
-			//System.out.println("Query: "+query);
-			for(Document d: queryDocs.get(q)){
-				
-				//System.out.println("\tDoc: "+d.url);
-				Map<String,Map<String, Double>> tfDoc = AScorer.getDocTermFreqs(d, q);
-								
-				double tfIdfUrl = 0.0;
-				double tfIdfTitle = 0.0;
-				double tfIdfBody = 0.0;
-				double tfIdfHeader = 0.0;
-				double tfIdfAnchor = 0.0;
-				double relevanceScore = 0.0;
-				
-				for(String term: q.words){
-					double qIDF = Util.IDF(term, idfs);
-					double d_tf_url = getDocFieldTF(term, "url", tfDoc);
-					tfIdfUrl = tfIdfUrl + qIDF * d_tf_url;
->>>>>>> FETCH_HEAD
 					
 					
 					double tfIdfUrl = 0.0;
