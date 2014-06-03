@@ -25,6 +25,12 @@ import weka.filters.unsupervised.attribute.Standardize;
 
 public class PairwiseLearner extends Learner {
   private LibSVM model;
+  boolean useBM25 = false;
+  boolean useSW = false;
+  boolean usePR = false;
+  BM25Scorer bm25;
+  SmallestWindowScorer sw;
+  
   public PairwiseLearner(boolean isLinearKernel){
     try{
       model = new LibSVM();
@@ -35,6 +41,26 @@ public class PairwiseLearner extends Learner {
     if(isLinearKernel){
       model.setKernelType(new SelectedTag(LibSVM.KERNELTYPE_LINEAR, LibSVM.TAGS_KERNELTYPE));
     }
+  }
+  
+  public PairwiseLearner(boolean isLinearKernel, boolean useBM25, boolean useSW, boolean usePR, String train_data_file) throws Exception{
+	  this.useBM25 = useBM25;
+	  this.usePR = usePR;
+	  this.useSW = useSW;
+	  Map<Query,Map<String, Document>> queryDict = Util.loadQueryDict(train_data_file);
+	    try{
+	      model = new LibSVM();
+	    } catch (Exception e){
+	      e.printStackTrace();
+	    }
+	    
+	    if(isLinearKernel){
+	      model.setKernelType(new SelectedTag(LibSVM.KERNELTYPE_LINEAR, LibSVM.TAGS_KERNELTYPE));
+	    }
+	    
+	    if(useBM25){
+	    	bm25 = new BM25Scorer(queryDict);
+	    }
   }
   
   public PairwiseLearner(double C, double gamma, boolean isLinearKernel){
@@ -55,6 +81,11 @@ public class PairwiseLearner extends Learner {
 	public Instances extract_train_features(String train_data_file,
 			String train_rel_file, Map<String, Double> idfs) throws Exception{
 		
+		
+		double bm25Score = 0.0;
+		double sqScore = 0.0;
+		double pageRank = 0.0;
+		
 		TestFeatures tf = new TestFeatures("point");
 		Instances dataset = null;
 		
@@ -74,9 +105,18 @@ public class PairwiseLearner extends Learner {
 		
 		for(Query q: queryDocs.keySet()){
 			String query = q.query;
-			//System.out.println(query);
+			System.out.println("Query: "+query);
 			for(Document d: queryDocs.get(q)){
+				
+				System.out.println("\tDoc: "+d.url);
+				
 				Map<String,Map<String, Double>> tfDoc = AScorer.getDocTermFreqs(d, q);
+				
+				//Testing BM25
+				 if(useBM25){
+					 bm25Score = bm25.getSimScore(d, q, idfs);
+					 System.out.println("\tBM25 Score = "+bm25Score+"\n");
+				 }
 				
 				
 				double tfIdfUrl = 0.0;

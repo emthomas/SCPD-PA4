@@ -18,7 +18,7 @@ public class SmallestWindowScorer extends BM25Scorer{
     
 	public SmallestWindowScorer(Map<String, Double> idfs,Map<Query,Map<String, Document>> queryDict) 
 	{
-		super(idfs, queryDict);
+		super(queryDict);
 		handleSmallestWindow();
 	}
 

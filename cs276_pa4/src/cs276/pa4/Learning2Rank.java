@@ -38,7 +38,14 @@ public class Learning2Rank {
 			/* 
 			 * @TODO: Your code here, add more features 
 			 * */
+			boolean isLinearKernel = true;
+			boolean useBM25 = true;
+			boolean useSmallestWindow = false;
+			boolean usePageRank = false;
 			System.err.println("Task 3");
+			learner = new PairwiseLearner(isLinearKernel, useBM25, useSmallestWindow, usePageRank, train_data_file);
+			
+			
 			
 		} else if (task == 4) {
 			

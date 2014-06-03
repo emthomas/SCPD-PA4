@@ -11,7 +11,7 @@ public class BM25Scorer {
 	Map<Query,Map<String, Document>> queryDict;
 	String[] TFTYPES = {"url","title","body","header","anchor"};
 	
-	public BM25Scorer(Map<String,Double> idfs,Map<Query,Map<String, Document>> queryDict)
+	public BM25Scorer(Map<Query,Map<String, Document>> queryDict)
 	{
 		//super(idfs);
 		this.queryDict = queryDict;
@@ -126,7 +126,7 @@ public class BM25Scorer {
 		}
 		
 		for(Map.Entry<String, Double> entry : tfQuery.entrySet()) {
-			//System.out.println(entry.getKey()+":"+entry.getValue());
+			System.out.println(entry.getKey()+":"+entry.getValue());
 			String term = entry.getKey();
 			double idft = 0;
 			double wt = 0;
@@ -134,8 +134,15 @@ public class BM25Scorer {
 			try {
 				//idft = this.idfs.get(term);
 				idft = Util.IDF(term, dfs);
+				System.out.println("IDFt = "+idft);
+				System.out.println("url = "+d.url);
 				wt = entry.getValue();
+				if(this.pagerankScores == null){
+					System.out.println("pagerank scores are null");
+				}
+				System.out.println("IDFt = "+idft);
 				pRank = this.pagerankScores.get(d);
+				System.out.println("IDFt = "+idft);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
