@@ -106,17 +106,16 @@ public class PairwisePlusLearner extends Learner{
 			
 			for(Query q: queryDocs.keySet()){
 				String query = q.query;
-				System.out.println("Query: "+query);
+				//System.out.println("Query: "+query);
 				for(Document d: queryDocs.get(q)){
 					
-					System.out.println("\tDoc: "+d.url);
-					
+					//System.out.println("\tDoc: "+d.url);
 					Map<String,Map<String, Double>> tfDoc = AScorer.getDocTermFreqs(d, q);
 					
 					//Testing BM25
 					 if(useBM25){
 						 bm25Score = bm25.getSimScore(d, q, idfs);
-						 System.out.println("\tBM25 Score = "+bm25Score+"\n");
+						 //System.out.println("\tBM25 Score = "+bm25Score+"\n");
 					 }
 					
 					

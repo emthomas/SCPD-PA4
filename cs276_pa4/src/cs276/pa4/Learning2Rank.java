@@ -15,6 +15,7 @@ import weka.core.Instances;
 
 public class Learning2Rank {
 
+	private static String queryDictFile = null;
 	
 	public static Classifier train(String train_data_file, String train_rel_file, int task, Map<String,Double> idfs) throws Exception{
 	    System.err.println("## Training with feature_file =" + train_data_file + ", rel_file = " + train_rel_file + " ... \n");
@@ -42,11 +43,9 @@ public class Learning2Rank {
 			boolean useBM25 = true;
 			boolean useSmallestWindow = false;
 			boolean usePageRank = false;
+			queryDictFile = train_data_file;
 			System.err.println("Task 3");
-			learner = new PairwisePlusLearner(isLinearKernel, useBM25, useSmallestWindow, usePageRank, train_data_file);
-			
-			
-			
+			learner = new PairwisePlusLearner(isLinearKernel, useBM25, useSmallestWindow, usePageRank, queryDictFile);		
 		} else if (task == 4) {
 			
 			/* 
@@ -81,6 +80,14 @@ public class Learning2Rank {
 				 * @TODO: Your code here, add more features 
 				 * */
 				System.err.println("Task 3");
+				boolean isLinearKernel = true;
+				boolean useBM25 = true;
+				boolean useSmallestWindow = false;
+				boolean usePageRank = false;
+				if(queryDictFile == null){
+					throw new Exception("Training Data file not loaded...Required for task 3");
+				}
+				learner = new PairwisePlusLearner(isLinearKernel, useBM25, useSmallestWindow, usePageRank, queryDictFile);
 				
 			} else if (task == 4) {
 				

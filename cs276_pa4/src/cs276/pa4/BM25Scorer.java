@@ -45,8 +45,8 @@ public class BM25Scorer {
     
     Map<Document,Map<String,Double>> lengths;
     Map<String,Double> avgLengths;
-    Map<Document,Double> pagerankScores;
-    
+    //Map<Document,Double> pagerankScores;
+    Map<String,Double> pagerankScores;
     //////////////////////////////////////////
     
     //sets up average lengths for bm25, also handles pagerank
@@ -54,7 +54,8 @@ public class BM25Scorer {
     {
     	lengths = new HashMap<Document,Map<String,Double>>();
     	avgLengths = new HashMap<String,Double>();
-    	pagerankScores = new HashMap<Document,Double>();
+    	//pagerankScores = new HashMap<Document,Double>();
+    	pagerankScores = new HashMap<String,Double>();
     	
     	//loop over the queries
     	for(Query q : this.queryDict.keySet()) {
@@ -71,10 +72,11 @@ public class BM25Scorer {
     	}
     	
     	for(Document doc : lengths.keySet()) {
-    		pagerankScores.put(doc,(double)doc.page_rank);
-    		System.out.println("Adding PageRank for:");
-    		System.out.println("\tURL: "+doc.url);
-    		System.out.println("\tdoc.page_rank: "+(double)doc.page_rank);
+    		//pagerankScores.put(doc,(double)doc.page_rank);
+    		pagerankScores.put(doc.url,(double)doc.page_rank);
+    		//System.out.println("Adding PageRank for:");
+    		//System.out.println("\tURL: "+doc.url);
+    		//System.out.println("\tdoc.page_rank: "+(double)doc.page_rank);
     		for(Map.Entry<String, Double> entry : lengths.get(doc).entrySet()) {
     			//System.out.println("\t"+entry.getKey()+": "+entry.getValue());
     			String type = entry.getKey();
@@ -128,39 +130,28 @@ public class BM25Scorer {
 		}
 		
 		for(Map.Entry<String, Double> entry : tfQuery.entrySet()) {
-			System.out.println(entry.getKey()+":"+entry.getValue());
+			//System.out.println(entry.getKey()+":"+entry.getValue());
 			String term = entry.getKey();
 			double idft = 0;
 			double wt = 0;
 			Double pRank = new Double(0.0);
 			try {
 				
-				for(Document doc: pagerankScores.keySet()){
-					System.out.println("doc: "+doc.url);
-					System.out.println("PR: "+pagerankScores.get(doc));
-				}
 				//idft = this.idfs.get(term);
 				idft = Util.IDF(term, dfs);
 				wt = entry.getValue();
-				//this.pagerankScores.get(d);
-				System.out.println("\tChecking PageRank for: ");
-				System.out.println("\tURL: "+d.url);
-				if(pagerankScores.containsKey(d)){
-					System.out.println("\tCONTAINS DOC: "+d.url);
-				}else{
-					System.out.println("\tDOESN NOT CONTAIN DOC: "+d.url);
-				}
-				pRank = this.pagerankScores.get(d);
+
+				pRank = this.pagerankScores.get(d.url);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			
-			System.out.println("Computing Score:");
-			System.out.println("wt : "+wt);
-			System.out.println("k1 : "+this.k1);
-			System.out.println("idft :"+idft);
-			System.out.println("pRank :"+pRank);
-			System.out.println("pageRankLambda :"+this.pageRankLambda);
+			//System.out.println("Computing Score:");
+			//System.out.println("wt : "+wt);
+			//System.out.println("k1 : "+this.k1);
+			//System.out.println("idft :"+idft);
+			//System.out.println("pRank :"+pRank);
+			//System.out.println("pageRankLambda :"+this.pageRankLambda);
 			//score += (wt/(this.k1+wt))*idft + this.pageRankLambda*(Math.log10(this.pageRankLambdaPrime+pRank));
 			score += (wt/(this.k1+wt))*idft + this.pageRankLambda*(pRank/(this.pageRankLambdaPrime+pRank));
 		}
