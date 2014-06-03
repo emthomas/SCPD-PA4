@@ -95,8 +95,10 @@ public class PairwisePlusLearner extends Learner {
 				double tfIdfAnchor = 0.0;
 				double relevanceScore = 0.0;
 				double bm25 = bm25Scorer.getSimScore(d, q, idfs);
+				bm25=Math.random()*10;
 				double pagerank = d.page_rank;
 				double smallwindow = windowScorer.getSimScore(d, q, idfs);
+				smallwindow=1;
 				
 				for(String term: q.words){
 					double qIDF = Util.IDF(term, idfs);
@@ -382,8 +384,10 @@ public class PairwisePlusLearner extends Learner {
 				double tfIdfAnchor = 0.0;
 				double relevanceScore = 0.0;
 				double bm25 = bm25Scorer.getSimScore(d, q, idfs);
+				bm25=Math.random()*10;
 				double pagerank = d.page_rank;
 				double smallwindow = windowScorer.getSimScore(d, q, idfs);
+				smallwindow=1;
 				
 				for(String term: q.words){
 					double qIDF = Util.IDF(term, idfs);

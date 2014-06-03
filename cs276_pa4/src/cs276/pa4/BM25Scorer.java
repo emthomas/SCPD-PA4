@@ -39,7 +39,7 @@ public class BM25Scorer extends AScorer {
     double banchor=0.1;
     double[] bfields = {burl,btitle,bbody,bheader,banchor};
 
-    double k1=50;
+    double k1=25;
     double pageRankLambda=1;
     double pageRankLambdaPrime=1;
     //////////////////////////////////////////
@@ -201,7 +201,7 @@ public class BM25Scorer extends AScorer {
 		
 		Map<String,Double> tfQuery = AScorer.getQueryFreqs(q);
 		
-        return getNetScore(tfs,q,tfQuery,d);
+        return getNetScore(tfs,q,tfQuery,d)*0.75;
 	}
 
 
