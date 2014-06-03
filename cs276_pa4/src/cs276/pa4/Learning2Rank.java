@@ -43,7 +43,7 @@ public class Learning2Rank {
 			boolean useSmallestWindow = false;
 			boolean usePageRank = false;
 			System.err.println("Task 3");
-			learner = new PairwiseLearner(isLinearKernel, useBM25, useSmallestWindow, usePageRank, train_data_file);
+			learner = new PairwisePlusLearner(isLinearKernel, useBM25, useSmallestWindow, usePageRank, train_data_file);
 			
 			
 			

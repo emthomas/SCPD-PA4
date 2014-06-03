@@ -130,22 +130,23 @@ public class BM25Scorer {
 			String term = entry.getKey();
 			double idft = 0;
 			double wt = 0;
-			double pRank = 0;
+			Double pRank = new Double(0.0);
 			try {
 				//idft = this.idfs.get(term);
 				idft = Util.IDF(term, dfs);
-				System.out.println("IDFt = "+idft);
-				System.out.println("url = "+d.url);
 				wt = entry.getValue();
-				if(this.pagerankScores == null){
-					System.out.println("pagerank scores are null");
-				}
-				System.out.println("IDFt = "+idft);
+				//this.pagerankScores.get(d);
 				pRank = this.pagerankScores.get(d);
-				System.out.println("IDFt = "+idft);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			
+			System.out.println("Computing Score:");
+			System.out.println("wt : "+wt);
+			System.out.println("k1 : "+this.k1);
+			System.out.println("idft :"+idft);
+			System.out.println("pRank :"+pRank);
+			System.out.println("pageRankLambda :"+this.pageRankLambda);
 			//score += (wt/(this.k1+wt))*idft + this.pageRankLambda*(Math.log10(this.pageRankLambdaPrime+pRank));
 			score += (wt/(this.k1+wt))*idft + this.pageRankLambda*(pRank/(this.pageRankLambdaPrime+pRank));
 		}
