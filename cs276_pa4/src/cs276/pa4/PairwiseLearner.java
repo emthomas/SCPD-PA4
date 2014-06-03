@@ -65,9 +65,6 @@ private LibSVM model;
 			attributes.add(new Attribute("body_w"));
 			attributes.add(new Attribute("header_w"));
 			attributes.add(new Attribute("anchor_w"));
-			attributes.add(new Attribute("bm25"));
-			attributes.add(new Attribute("pagerank"));
-			attributes.add(new Attribute("smallestwindow"));
 			attributes.add(new Attribute("relevance_score"));
 			dataset = new Instances("train_dataset", attributes, 0);
 			
